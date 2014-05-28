@@ -31,13 +31,13 @@ This guide presumes you have already created an [Alloy app using it's developmen
 ####1. Clone/Copy Library####
 onto your dev machine by clicking on the *Clone to Desktop* or *Download ZIP* buttons on the main repo page.
 
-![](https://github.com/Tealium/mobile_plugins/wiki/images/generic_githubclone.png)
+![](https://github.com/Tealium/titanium-plugin/wiki/images/generic_githubclone.png)
 
 ####2. Add To Project 
 
 2a. Copy the "tealium" directory into the "&lt;project-root&gt;/app/assets/" directory.
 
-![](https://github.com/Tealium/mobile_plugins/wiki/images/copy-alloy.png)
+![](https://github.com/Tealium/titanium-plugin/wiki/images/copy-alloy.png)
 
 2b. In your project's "/app/alloy.js" file, import the Tealium Library using:
 
@@ -96,7 +96,7 @@ function onClick(e) {
 
 Congratulations! You have successfully implemented the Tealium Plugin into your project. The following should be visible in the console: 
 
-![](https://github.com/Tealium/mobile_plugins/wiki/images/logs.png)
+![](https://github.com/Tealium/titanium-plugin/wiki/images/logs.png)
 
 ### What Next ###
 
