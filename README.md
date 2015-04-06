@@ -119,7 +119,6 @@ Alternatively, you can use an analytic service with real-time reporting to confi
 Questions or comments?
 
 - Post code questions in the [issues page.](../../../issues)
-- Email us at [mobile_support@tealium.com](mailto:mobile_support@tealium.com)
 - Contact your Tealium account manager
 
 
