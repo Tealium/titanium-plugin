@@ -121,3 +121,8 @@ Questions or comments?
 - Post code questions in the [issues page.](../../../issues)
 - Email us at [mobile_support@tealium.com](mailto:mobile_support@tealium.com)
 - Contact your Tealium account manager
+
+
+--------------------------------------------
+
+Copyright (C) 2012-2015, Tealium Inc.
