@@ -8,7 +8,6 @@
 #import "TiModule.h"
 
 @interface ComTealiumAppceleratorIosModule : TiModule
-{
-}
+
 
 @end

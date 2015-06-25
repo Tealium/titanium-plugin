@@ -4,13 +4,13 @@
     <name>Sample</name>
     <version>1.0</version>
     <publisher>mobiledev</publisher>
-    <url>http://</url>
+    <url>http://www.tealium.com</url>
     <description>undefined</description>
     <copyright>2015 by mobiledev</copyright>
     <icon>appicon.png</icon>
     <fullscreen>false</fullscreen>
     <navbar-hidden>false</navbar-hidden>
-    <analytics>true</analytics>
+    <analytics>false</analytics>
     <guid>05396bef-2228-4c64-9111-33ab6431d333</guid>
     <property name="ti.ui.defaultunit" type="string">dp</property>
     <ios>
@@ -48,7 +48,6 @@
         <theme>default</theme>
     </mobileweb>
     <modules>
-        <module platform="android">com.tealium.appcelerator.android</module>
         <module platform="iphone">com.tealium.appcelerator.ios</module>
     </modules>
     <deployment-targets>

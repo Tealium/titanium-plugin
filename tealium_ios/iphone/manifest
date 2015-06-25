@@ -2,17 +2,17 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.0
+version: 1.0.0
 apiversion: 2
 architectures: armv7 arm64 i386 x86_64
 description: tealium_ios
-author: Tealium
+author: Your Name
 license: Specify your license
-copyright: Tealium
+copyright: Copyright (c) 2015 by Your Company
 
 # these should not be edited
 name: tealium_ios
 moduleid: com.tealium.appcelerator.ios
-guid: b7ea98aa-ef01-46dc-afa2-fc8da6c5519c
+guid: 0a99cf65-f0c3-4759-9b0b-7a23719906a3
 platform: iphone
 minsdk: 4.0.0.GA

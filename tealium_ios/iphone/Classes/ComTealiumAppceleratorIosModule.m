@@ -10,6 +10,12 @@
 #import "TiHost.h"
 #import "TiUtils.h"
 #import <TealiumLibrary/Tealium.h>
+#import <UIKit/UIDevice.h>
+
+#pragma mark - TEALIUM iQ Settings: Account / Profile / Target
+#define TEALIUM_ACCOUNT_NAME     @"tealiummobile"
+#define TEALIUM_PROFILE_NAME     @"demo"
+#define TEALIUM_ENVIRONMENT_NAME @"dev"
 
 @implementation ComTealiumAppceleratorIosModule
 
@@ -18,26 +24,44 @@
 // this is generated for your module, please do not change it
 -(id)moduleGUID
 {
-	return @"b7ea98aa-ef01-46dc-afa2-fc8da6c5519c";
+    return @"0a99cf65-f0c3-4759-9b0b-7a23719906a3";
 }
 
 // this is generated for your module, please do not change it
 -(NSString*)moduleId
 {
-	return @"com.tealium.appcelerator.ios";
+    return @"com.tealium.appcelerator.ios";
 }
 
 #pragma mark Lifecycle
 
 -(void)startup
 {
-	// this method is called when the module is first loaded
-	// you *must* call the superclass
-	[super startup];
+    // this method is called when the module is first loaded
+    // you *must* call the superclass
+    [super startup];
     
-    [Tealium initSharedInstance:@"tealiummobile" profile:@"demo" target:@"dev"];
-
-	NSLog(@"[INFO] %@ loaded",self);
+    NSUInteger options      = TLDisplayVerboseLogs;
+    NSString *platform      = @"ios_titanium";
+    NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
+    
+    NSTimeInterval timestamp    = [[NSDate date] timeIntervalSince1970];
+    NSString *timestampString   = [@(timestamp) stringValue];
+    
+    NSString *overrideURL = [NSString stringWithFormat:@"https://tags.tiqcdn.com/utag/%@/%@/%@/mobile.html?library_version=%@&timestamp=%@&os_version=%@&platform=%@",
+                             TEALIUM_ACCOUNT_NAME,
+                             TEALIUM_PROFILE_NAME,
+                             TEALIUM_ENVIRONMENT_NAME,
+                             TealiumLibraryVersion,
+                             timestampString,
+                             systemVersion,
+                             platform];
+    
+    [Tealium initSharedInstance:TEALIUM_ACCOUNT_NAME
+                        profile:TEALIUM_PROFILE_NAME
+                         target:TEALIUM_ENVIRONMENT_NAME
+                        options:(TealiumOptions)options
+               globalCustomData:@{TealiumDSK_OverrideUrl:overrideURL}];
 }
 
 -(void)shutdown:(id)sender
@@ -90,12 +114,47 @@
 
 #pragma Public APIs
 
-- (void) trackView:(NSString *) viewName :(NSDictionary *) data {
+- (void) trackViewWithData:(id)params {
+
+    NSDictionary *customData = [[self class] dictionaryFromParams:params];
     
+    [Tealium trackCallType:TealiumViewCall
+                customData:customData
+                    object:nil];
 }
 
-- (void) trackEvent:(NSString *) eventName :(NSDictionary *) data {
+- (void) trackEventWithData:(id)params {
+
+    NSDictionary *customData = [[self class] dictionaryFromParams:params];
     
+    [Tealium trackCallType:TealiumEventCall
+                customData:customData
+                    object:nil];
+}
+
++ (NSDictionary *) dictionaryFromParams:(id) params {
+    
+    if(!params) {
+        return nil;
+    }
+    
+    if([params isKindOfClass:[NSDictionary class]]) {
+        return params;
+    }
+    
+    if(![params isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+
+    NSArray *paramsArray = (NSArray *)params;
+    
+    id obj = [paramsArray lastObject];
+
+    if ([obj isKindOfClass:[NSDictionary class]]) {
+        return obj;
+    }
+    
+    return nil;
 }
 
 @end

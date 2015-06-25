@@ -26,9 +26,8 @@
 		24DD6CFA1134B3F500162E58 /* ComTealiumAppceleratorIosModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DD6CF81134B3F500162E58 /* ComTealiumAppceleratorIosModule.m */; };
 		24DE9E1111C5FE74003F90F6 /* ComTealiumAppceleratorIosModuleAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = 24DE9E0F11C5FE74003F90F6 /* ComTealiumAppceleratorIosModuleAssets.h */; };
 		24DE9E1211C5FE74003F90F6 /* ComTealiumAppceleratorIosModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DE9E1011C5FE74003F90F6 /* ComTealiumAppceleratorIosModuleAssets.m */; };
-		80A8515A1B387C1D0054EC5E /* TealiumLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80A851591B387C1D0054EC5E /* TealiumLibrary.framework */; };
-		80A8515C1B387C370054EC5E /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80A8515B1B387C370054EC5E /* CoreTelephony.framework */; };
-		80A8515E1B387C400054EC5E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80A8515D1B387C400054EC5E /* SystemConfiguration.framework */; };
+		80C40BA21B3B236A00BFF284 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80C40BA11B3B236A00BFF284 /* SystemConfiguration.framework */; };
+		80C40BA61B3C592C00BFF284 /* TealiumLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80C40BA51B3C592C00BFF284 /* TealiumLibrary.framework */; };
 		AA747D9F0F9514B9006C5449 /* ComTealiumAppceleratorIos_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* ComTealiumAppceleratorIos_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -49,9 +48,8 @@
 		24DD6D1B1134B66800162E58 /* titanium.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = titanium.xcconfig; sourceTree = "<group>"; };
 		24DE9E0F11C5FE74003F90F6 /* ComTealiumAppceleratorIosModuleAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComTealiumAppceleratorIosModuleAssets.h; path = Classes/ComTealiumAppceleratorIosModuleAssets.h; sourceTree = "<group>"; };
 		24DE9E1011C5FE74003F90F6 /* ComTealiumAppceleratorIosModuleAssets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComTealiumAppceleratorIosModuleAssets.m; path = Classes/ComTealiumAppceleratorIosModuleAssets.m; sourceTree = "<group>"; };
-		80A851591B387C1D0054EC5E /* TealiumLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TealiumLibrary.framework; path = "../../../../Downloads/ios-library-4.1.9/TealiumCompact/TealiumLibrary.framework"; sourceTree = "<group>"; };
-		80A8515B1B387C370054EC5E /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
-		80A8515D1B387C400054EC5E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		80C40BA11B3B236A00BFF284 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		80C40BA51B3C592C00BFF284 /* TealiumLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TealiumLibrary.framework; path = ../frameworks/TealiumLibrary.framework; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* ComTealiumAppceleratorIos_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComTealiumAppceleratorIos_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libComTealiumAppceleratorIos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libComTealiumAppceleratorIos.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,9 +60,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80A8515E1B387C400054EC5E /* SystemConfiguration.framework in Frameworks */,
-				80A8515C1B387C370054EC5E /* CoreTelephony.framework in Frameworks */,
-				80A8515A1B387C1D0054EC5E /* TealiumLibrary.framework in Frameworks */,
+				80C40BA61B3C592C00BFF284 /* TealiumLibrary.framework in Frameworks */,
+				80C40BA21B3B236A00BFF284 /* SystemConfiguration.framework in Frameworks */,
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -94,9 +91,8 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				80A8515D1B387C400054EC5E /* SystemConfiguration.framework */,
-				80A8515B1B387C370054EC5E /* CoreTelephony.framework */,
-				80A851591B387C1D0054EC5E /* TealiumLibrary.framework */,
+				80C40BA51B3C592C00BFF284 /* TealiumLibrary.framework */,
+				80C40BA11B3B236A00BFF284 /* SystemConfiguration.framework */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -225,13 +221,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 24DD6D1B1134B66800162E58 /* titanium.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DSTROOT = /tmp/ComTealiumAppceleratorIos.dst;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/mobiledev/Downloads/ios-library-4.1.9/TealiumCompact",
+					"/Users/mobiledev/Chad/github/tealium/titanium-plugin/tealium_ios/frameworks",
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -270,11 +266,11 @@
 			baseConfigurationReference = 24DD6D1B1134B66800162E58 /* titanium.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
 				DSTROOT = /tmp/ComTealiumAppceleratorIos.dst;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/mobiledev/Downloads/ios-library-4.1.9/TealiumCompact",
+					"/Users/mobiledev/Chad/github/tealium/titanium-plugin/tealium_ios/frameworks",
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_MODEL_TUNING = G5;

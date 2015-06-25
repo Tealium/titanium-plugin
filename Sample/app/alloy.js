@@ -16,11 +16,25 @@ if (Ti.Platform.name == "android") {
 	Tealium = require('com.tealium.appcelerator.android');
 } else if (Ti.Platform.name == "iPhone OS") {
 	Tealium = require('com.tealium.appcelerator.ios');
-} else {
 	Tealium.trackView = function(viewName, data) {
-		
+		data = data || {};
+		if(viewName) {
+			data.screen_title = viewName;	
+		}
+		Tealium.trackViewWithData(data);
 	};
 	Tealium.trackEvent = function(eventName, data) {
-		
+		data = data || {};
+		if(eventName) {
+			data.link_id = eventName;
+		}
+		Tealium.trackEventWithData(data);
+	};
+} else {
+	Tealium.trackView = function(viewName, data) {
+		Ti.API.warn("Tealium plugin does not support " + Ti.Platform.name);
+	};
+	Tealium.trackEvent = function(eventName, data) {
+		Ti.API.warn("Tealium plugin does not support " + Ti.Platform.name);
 	};
 }

@@ -10,7 +10,8 @@
 //
 // How to add a Framework (example)
 //
-// OTHER_LDFLAGS=$(inherited) -framework Foo
+OTHER_LDFLAGS=$(inherited) -framework SystemConfiguration -F "$(SRCROOT)/../../../tealium_ios/frameworks" -framework TealiumLibrary
+
 //
 // Adding a framework for a specific version(s) of iPhone:
 //
