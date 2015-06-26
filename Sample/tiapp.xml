@@ -49,6 +49,7 @@
     </mobileweb>
     <modules>
         <module platform="iphone">com.tealium.appcelerator.ios</module>
+        <module platform="android">com.tealium.appcelerator.android</module>
     </modules>
     <deployment-targets>
         <target device="android">true</target>

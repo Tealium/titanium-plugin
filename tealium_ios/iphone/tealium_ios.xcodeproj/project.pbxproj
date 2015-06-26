@@ -44,7 +44,7 @@
 
 /* Begin PBXFileReference section */
 		24DD6CF71134B3F500162E58 /* ComTealiumAppceleratorIosModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComTealiumAppceleratorIosModule.h; path = Classes/ComTealiumAppceleratorIosModule.h; sourceTree = "<group>"; };
-		24DD6CF81134B3F500162E58 /* ComTealiumAppceleratorIosModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComTealiumAppceleratorIosModule.m; path = Classes/ComTealiumAppceleratorIosModule.m; sourceTree = "<group>"; };
+		24DD6CF81134B3F500162E58 /* ComTealiumAppceleratorIosModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComTealiumAppceleratorIosModule.m; path = Classes/ComTealiumAppceleratorIosModule.m; sourceTree = "<group>"; wrapsLines = 0; };
 		24DD6D1B1134B66800162E58 /* titanium.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = titanium.xcconfig; sourceTree = "<group>"; };
 		24DE9E0F11C5FE74003F90F6 /* ComTealiumAppceleratorIosModuleAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComTealiumAppceleratorIosModuleAssets.h; path = Classes/ComTealiumAppceleratorIosModuleAssets.h; sourceTree = "<group>"; };
 		24DE9E1011C5FE74003F90F6 /* ComTealiumAppceleratorIosModuleAssets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComTealiumAppceleratorIosModuleAssets.m; path = Classes/ComTealiumAppceleratorIosModuleAssets.m; sourceTree = "<group>"; };

@@ -19,6 +19,10 @@ import com.tealium.library.Tealium;
 @Kroll.module(name = "TealiumAndroid", id = "com.tealium.appcelerator.android")
 public class TealiumAndroidModule extends KrollModule {
 
+	private static final String TEALIUM_ACCOUNT = "tealiummobile";
+	private static final String TEALIUM_PROFILE = "demo";
+	private static final String TEALIUM_ENVIRONMENT = "dev";
+	
 	// You can define constants with @Kroll.constant, for example:
 	// @Kroll.constant public static final String EXTERNAL_NAME = value;
 
@@ -28,8 +32,18 @@ public class TealiumAndroidModule extends KrollModule {
 
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app) {
-		Tealium.initialize(Tealium.Config.create(app, "tealiummobile", "demo",
-				"dev").setLibraryLogLevel(Tealium.LogLevel.VERBOSE));
+		
+		Tealium.initialize(Tealium.Config.create(app, 
+				TEALIUM_ACCOUNT, 
+				TEALIUM_PROFILE,
+				TEALIUM_ENVIRONMENT)
+				.setLibraryLogLevel(Tealium.LogLevel.VERBOSE)
+				.setMobileHtmlUrlOverride(String.format(Locale.ROOT, 
+						"https://tags.tiqcdn.com/utag/%s/%s/%s/mobile.html?platform=android_titanium&library_version=4.1.1c&os_version=%s", 
+						TEALIUM_ACCOUNT, 
+						TEALIUM_PROFILE,
+						TEALIUM_ENVIRONMENT, 
+						Build.VERSION.RELEASE));
 	}
 
 	// Methods

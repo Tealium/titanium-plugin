@@ -12,10 +12,7 @@
 #import <TealiumLibrary/Tealium.h>
 #import <UIKit/UIDevice.h>
 
-#pragma mark - TEALIUM iQ Settings: Account / Profile / Target
-#define TEALIUM_ACCOUNT_NAME     @"tealiummobile"
-#define TEALIUM_PROFILE_NAME     @"demo"
-#define TEALIUM_ENVIRONMENT_NAME @"dev"
+#define TEALIUM_ENABLE_ARG_COUNT 4
 
 @implementation ComTealiumAppceleratorIosModule
 
@@ -40,28 +37,6 @@
     // this method is called when the module is first loaded
     // you *must* call the superclass
     [super startup];
-    
-    NSUInteger options      = TLDisplayVerboseLogs;
-    NSString *platform      = @"ios_titanium";
-    NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
-    
-    NSTimeInterval timestamp    = [[NSDate date] timeIntervalSince1970];
-    NSString *timestampString   = [@(timestamp) stringValue];
-    
-    NSString *overrideURL = [NSString stringWithFormat:@"https://tags.tiqcdn.com/utag/%@/%@/%@/mobile.html?library_version=%@&timestamp=%@&os_version=%@&platform=%@",
-                             TEALIUM_ACCOUNT_NAME,
-                             TEALIUM_PROFILE_NAME,
-                             TEALIUM_ENVIRONMENT_NAME,
-                             TealiumLibraryVersion,
-                             timestampString,
-                             systemVersion,
-                             platform];
-    
-    [Tealium initSharedInstance:TEALIUM_ACCOUNT_NAME
-                        profile:TEALIUM_PROFILE_NAME
-                         target:TEALIUM_ENVIRONMENT_NAME
-                        options:(TealiumOptions)options
-               globalCustomData:@{TealiumDSK_OverrideUrl:overrideURL}];
 }
 
 -(void)shutdown:(id)sender
@@ -114,6 +89,46 @@
 
 #pragma Public APIs
 
+- (void) enableWithOptions:(id)options {
+    
+    NSString *accountName = nil;
+    NSString *profileName = nil;
+    NSString *environmentName = nil;
+    BOOL isRelease = NO;
+    
+    if(![[self class] extractParameters:options
+                     outAccountName:&accountName
+                     outProfileName:&profileName
+                 outEnvironmentName:&environmentName
+                           outIsRelease:&isRelease]) {
+        return;
+    }
+    
+    
+    
+    NSUInteger tealiumOptions = isRelease ? TLSuppressLogs : TLDisplayVerboseLogs | TLDisableHTTPS;
+    NSString *platform = @"ios_titanium";
+    NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
+    
+    NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+    NSString *timestampString = [@(timestamp) stringValue];
+    
+    NSString *overrideURL = [NSString stringWithFormat:@"https://tags.tiqcdn.com/utag/%@/%@/%@/mobile.html?library_version=%@&timestamp=%@&os_version=%@&platform=%@",
+                             accountName,
+                             profileName,
+                             environmentName,
+                             TealiumLibraryVersion,
+                             timestampString,
+                             systemVersion,
+                             platform];
+    
+    [Tealium initSharedInstance:accountName
+                        profile:profileName
+                         target:environmentName
+                        options:(TealiumOptions)tealiumOptions
+               globalCustomData:@{TealiumDSK_OverrideUrl:overrideURL}];
+}
+
 - (void) trackViewWithData:(id)params {
 
     NSDictionary *customData = [[self class] dictionaryFromParams:params];
@@ -155,6 +170,29 @@
     }
     
     return nil;
+}
+
++ (BOOL) extractParameters:(id) options
+            outAccountName:(NSString **) accountName
+            outProfileName: (NSString **) profileName
+        outEnvironmentName: (NSString **) environmentName
+              outIsRelease:(BOOL*) isRelease {
+    
+    if(![options isKindOfClass:[NSArray class]]) {
+        return NO;
+    }
+    
+    NSArray *params = options;
+    if([params count] != TEALIUM_ENABLE_ARG_COUNT) {
+        return NO;
+    }
+    
+    *accountName = [[params objectAtIndex:0] stringValue];
+    *profileName = [[params objectAtIndex:1] stringValue];
+    *environmentName = [[params objectAtIndex:2] stringValue];
+    *isRelease = [[params objectAtIndex:3] boolValue];
+    
+    return accountName && profileName && environmentName;
 }
 
 @end
