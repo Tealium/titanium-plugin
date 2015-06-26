@@ -1,126 +1,26 @@
-Titanium Plugin
-===================
+# Tealium Titanium Plugin
 
-### Brief ###
+This plugin brings the power of [Tealium's mobile tag management solution](http://tealium.com/products/tealium-for-mobile/) to Titanium applications.  It provides a bridge to the native [Android](https://github.com/Tealium/android-library) and [iOS](https://github.com/Tealium/ios-library) libraries.
 
-This plugin provides the means to tag Titanium applications for the purposes of leveraging [Tealium's tag management platform (Tealium IQ)](http://tealium.com/products/enterprise-tag-management/). 
+## What is Tealium iQ Tag Management ? 
 
-Tealium's [mobile solution](http://tealium.com/products/enterprise-tag-management/mobile/) permits an app to add, remove or edit analytic services remotely, in real-time, without requiring a code rebuild or new release to take effect.
+The [Tealium iQ™](http://tealium.com/products/tealium-iq-tag-management-system/) tag management system is a powerful and highly extensible solution that helps marketers easily manage their mission-critical technologies across web and mobile channels. Tealium iQ drives the complexity out of vendor tag deployments and is the cornerstone for achieving unified marketing, i.e., the ability to harmonize applications and data to drive superior cross-channel customer interactions.
 
-If you wish to use Titanium Classic, see [this](../../../wiki/Titanium-Classic-Quick-Start) quick start guide instead.
+## How To Get Started
 
-### Table of Contents ###
+* Check out the [Getting Started](getting_started.md) guide for a step by step walkthough of adding Tealium to an extisting project  
+* Read the [plugin](https://github.com/Tealium/titanium-plugin/wiki/Tealium-API), [Android](https://github.com/Tealium/android-library/wiki/API-Tealium) and [iOS](https://github.com/Tealium/ios-library/wiki/API-4.x) APIs
+* There are many other useful articles in the [wiki](https://github.com/Tealium/titanium-plugin/wiki)
 
-- [Requirements](#requirements)
-- [Quick Start](#quick-start)
-    - [1. Clone/Copy Library](#1-clonecopy-library)
-    - [2. Add to Project](#2-add-to-project)
-    - [3. Run](#3-run)
-- [What next](#what-next)
-- [Contact Us](#contact-us)
+## Communication
 
-### Requirements ###
+* If you have **code questions** or have experienced **errors** please post an issue in the [issues page](../../issues)
+* If you have **general questions** or want to network with other users please visit the [Tealium Learning Community](https://community.tealiumiq.com)
+* If you have **account specific questions** please contact your Tealium account manager
 
-* Titanium 3+
+## License
 
-### Quick Start ###
-
-This guide presumes you have already created an [Alloy app using it's development studio](http://docs.appcelerator.com/titanium/3.0/#!/guide/Quick_Start). Follow the below steps to add Tealium's Plugin to it.  
-
-
-####1. Clone/Copy Library####
-onto your dev machine by clicking on the *Clone to Desktop* or *Download ZIP* buttons on the main repo page.
-
-![](https://github.com/Tealium/titanium-plugin/wiki/images/generic_githubclone.png)
-
-####2. Add To Project 
-
-2a. Copy the "tealium" directory into the "&lt;project-root&gt;/app/assets/" directory.
-
-![](https://github.com/Tealium/titanium-plugin/wiki/images/copy-alloy.png)
-
-2b. In your project's "/app/alloy.js" file, import the Tealium Library using:
-
-```javascript
-Titanium.include(‘Tealium/tealium.js'); 
-```
-
-2c. In the entry controller of your application (most likely "/app/controller/index.js") add the following line to initialize:
-
-```javascript
-Tealium.initialize({
-    window : $.index, /* your first window */
-    account : "tealiummobile",
-    profile : "demo",
-    environment : "dev",/* dev, qa, or prod */
-    disableHTTPS : false, /* OPTIONAL; Default is false. */
-    suppressLogs : true, /* OPTIONAL; Default is true. */
-    suppressErrors : false, /* OPTIONAL; Default is false. */
-    disableLifeCycleTracking : false /* OPTIONAL; Default is false. */
-}); 
-```
-
-2d. (OPTIONAL) If you want lifecycle tracking be sure to add the following code to every window your app uses:
-
-```javascript
-$.index.addEventListener('focus', function() {
-    Tealium.onFocus();
-});
-
-$.index.addEventListener('blur', function() {
-    Tealium.onBlur();
-});
-``` 
-
-> NOTE: If *Tealium.onFocus()* isn't called within 10 seconds of *Tealium.onBlur()* being called: the app will be considered to be asleep.
-
-2e. (OPTIONAL) It is also highly recommended you add "*Tealium.trackViewEvent(...)*" into the "focus" transforming the *$.index.addEventListener('focus', ...)* to capture view events:
-
-```javascript
-$.index.addEventListener('focus', function() {
-    Tealium.trackViewEvent('root-screen');
-    Tealium.onFocus();
-}); 
-```
-
-2f. When tagging controls, you should use the Tealium.trackControlEvent(...) method.
-
-```javascript
-function onClick(e) {
-	Tealium.trackControlEvent('button:click');
-	/* click logic */
-}
-```
-
-####3. Run
-
-Congratulations! You have successfully implemented the Tealium Plugin into your project. The following should be visible in the console: 
-
-![](https://github.com/Tealium/titanium-plugin/wiki/images/logs.png)
-
-### What Next ###
-
-#### Use Proxy to verify (optional)
-
-You can use an HTTP proxy to confirm successful retrieval of configuration data from our multi-CDN and to confirm successful delivery of a tracking call. Several popular third-party options are:
-
-- [Charles Proxy](http://www.charlesproxy.com)
-- [Wireshark](http://www.wireshark.org)
-- [HTTP Scoop](http://www.tuffcode.com)
-
-Tealium's multi-CDN configuration address is *http://tags.tiqcdn.com*.  You may have to use the [disable HTTPS Config option](../../../wiki/Tealium-API#initializeconfig--object) when you init the library to permit proxying.
-
-If you have access to the Tealium Community site, detailed instructions on how to setup Charles Proxy on an iDevice can be found at: https://community.tealiumiq.com/posts/624994
-
-Alternatively, you can use an analytic service with real-time reporting to confirm delivery of dispatches.  This verification method requires both an active analytics account (i.e. [Google Analytics](http://www.google.com/analytics/)) and an active [Tealium IQ](http://tealium.com) account to enable mapping.  If you have both of these, consult the Tealium community post at: https://community.tealiumiq.com/posts/568700
-
-
-### Contact Us ###
-Questions or comments?
-
-- Post code questions in the [issues page.](../../../issues)
-- Contact your Tealium account manager
-
+Use of this software is subject to the terms and conditions of the license agreement contained in the file titled "LICENSE.txt".  Please read the license before downloading or using any of the files contained in this repository. By downloading or using any of these files, you are agreeing to be bound by and comply with the license agreement.
 
 --------------------------------------------
 
