@@ -1,8 +1,12 @@
 .metadata
 
-
-
 # iOS
-tealium_ios/.project
-tealium_ios/.settings
-tealium_ios/iphone/build
+source/tealium_ios/.project
+source/tealium_ios/iphone/build/
+
+# Android
+source/tealium_android/.classpath
+source/tealium_android/.project
+source/tealium_android/.settings/
+source/tealium_android/android/build/
+source/tealium_android/bin/
