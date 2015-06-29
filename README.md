@@ -8,7 +8,7 @@ The [Tealium iQ™](http://tealium.com/products/tealium-iq-tag-management-system
 
 ## How To Get Started
 
-* Check out the [Getting Started](getting_started.md) guide for a step by step walkthough of adding Tealium to an extisting project  
+* Check out the [Getting Started](https://github.com/Tealium/titanium-plugin/wiki/Getting-Started) guide for a step by step walkthough of adding Tealium to an extisting project  
 * Read the [plugin](https://github.com/Tealium/titanium-plugin/wiki/Tealium-API), [Android](https://github.com/Tealium/android-library/wiki/API-Tealium) and [iOS](https://github.com/Tealium/ios-library/wiki/API-4.x) APIs
 * There are many other useful articles in the [wiki](https://github.com/Tealium/titanium-plugin/wiki)
 
