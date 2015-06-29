@@ -11,3 +11,4 @@
 // Alloy.Globals.someGlobalFunction = function(){};
 
 Ti.include("tealium.js");
+Tealium.initialize("tealiummobile", "demo", "dev", false);

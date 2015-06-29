@@ -32,5 +32,3 @@ if (Ti.Platform.name == "android") {
 		Ti.API.warn("Tealium plugin does not support " + Ti.Platform.name);
 	};
 }
-
-Tealium.initialize("tealiummobile", "demo", "dev", false);
