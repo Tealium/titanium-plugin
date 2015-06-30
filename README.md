@@ -8,7 +8,7 @@ The [Tealium iQ™](http://tealium.com/products/tealium-iq-tag-management-system
 
 ## How To Get Started
 
-* Check out the [Quickstart](QUICKSTART.md) guide for a step by step walkthough of adding Tealium to an extisting project  
+Check out the [Quickstart](QUICKSTART.md) guide for a step by step walkthough of adding Tealium to an extisting project  
 
 ## Communication
 
