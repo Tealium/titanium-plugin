@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
-    <id>com.tealium.appcelerator.sample</id>
-    <name>Sample</name>
+    <id>com.tealium.titanium.classic.sample</id>
+    <name>Sample_Classic</name>
     <version>1.0</version>
     <publisher>mobiledev</publisher>
-    <url>http://www.tealium.com</url>
+    <url>http://</url>
     <description>undefined</description>
     <copyright>2015 by mobiledev</copyright>
     <icon>appicon.png</icon>
     <fullscreen>false</fullscreen>
     <navbar-hidden>false</navbar-hidden>
-    <analytics>false</analytics>
-    <guid>05396bef-2228-4c64-9111-33ab6431d333</guid>
+    <analytics>true</analytics>
+    <guid>4a3cb93c-23df-47e2-9000-43593d258f58</guid>
     <property name="ti.ui.defaultunit" type="string">dp</property>
     <ios>
         <plist>
@@ -48,18 +48,15 @@
         <theme>default</theme>
     </mobileweb>
     <modules>
-        <module platform="iphone">com.tealium.appcelerator.ios</module>
         <module platform="android">com.tealium.appcelerator.android</module>
+        <module platform="iphone">com.tealium.appcelerator.ios</module>
     </modules>
     <deployment-targets>
         <target device="android">true</target>
         <target device="ipad">true</target>
         <target device="iphone">true</target>
-        <target device="mobileweb">false</target>
+        <target device="mobileweb">true</target>
     </deployment-targets>
     <sdk-version>4.0.0.GA</sdk-version>
-    <plugins>
-        <plugin version="1.0">ti.alloy</plugin>
-    </plugins>
-    <property name="appc-app-id" type="string">558825857ce77bae445a28da</property>
+    <property name="appc-app-id" type="string">5592db56b3cb076947b4c0f8</property>
 </ti:app>
