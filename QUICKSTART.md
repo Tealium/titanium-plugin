@@ -1,5 +1,9 @@
 # Titanium SDK
 
+This plugin bridges Titanium's system to our existing [Android](http://www.github.com/tealium/android-library) and [iOS](http://www.github.com/tealium/ios-library) native libraries.
+
+To integrate: 
+
 * [Add the modules to the Titanium SDK](#1-add-the-modules-to-the-titanium-sdk) 
 * [Reference the modules in the tiapp.xml file](#2-reference-the-modules-in-the-tiappxml-file)
 * [Add the tealium.js file](#3-add-the-tealiumjs-file)
@@ -43,6 +47,13 @@ Add the include and initialization code:
 
 ```javascript
 Ti.include("tealium.js");
+/* 
+Tealium.initialize(
+	<Tealium account name>, 
+	<Tealium profile name>, 
+	<Tealium environment name>, 
+	isRelease);
+*/
 Tealium.initialize("tealiummobile", "demo", "dev", false);
 ``` 
 
@@ -54,9 +65,14 @@ In ```<PROJECT ROOT>/app/alloy.js```
 
 In ```<PROJECT ROOT>/Resources/app.js```
 
+> When ```isRelease``` is false, Tealium Library logs will be visible in the console.  
+
 ## 5. Add view track calls
 
 ```javascript
+/*
+Tealium.trackView(<view name>, <view data>);
+*/
 Tealium.trackView('view_name', {
 	'data_source-key' : 'data_source-value'
 });
@@ -65,6 +81,9 @@ Tealium.trackView('view_name', {
 ## 6. Add event track calls
 
 ```javascript
+/*
+Tealium.trackEvent(<event name>, <event data>);
+*/
 Tealium.trackEvent('button_name', {
 	'data_source-key' : 'data_source-value'
 });
