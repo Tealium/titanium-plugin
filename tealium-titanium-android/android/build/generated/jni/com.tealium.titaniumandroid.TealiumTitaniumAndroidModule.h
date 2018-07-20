@@ -31,6 +31,12 @@ private:
 
 	// Methods -----------------------------------------------------------
 	static void initTealium(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void trackView(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void setVolatile(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void getDataType(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void setPersistent(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void trackEvent(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void printDataType(const v8::FunctionCallbackInfo<v8::Value>&);
 	static void example(const v8::FunctionCallbackInfo<v8::Value>&);
 
 	// Dynamic property accessors ----------------------------------------

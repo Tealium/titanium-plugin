@@ -12,12 +12,25 @@ import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 
 import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.common.TiConfig;
+import org.appcelerator.kroll.KrollDict;
 import com.tealium.library.Tealium;
 import com.tealium.lifecycle.LifeCycle;
 import android.webkit.WebView;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
 
+import java.lang.reflect.*;
 
 @Kroll.module(name="TealiumTitaniumAndroid", id="com.tealium.titaniumandroid")
 public class TealiumTitaniumAndroidModule extends KrollModule
@@ -27,7 +40,9 @@ public class TealiumTitaniumAndroidModule extends KrollModule
 	private static final String LCAT = "TealiumTitaniumAndroidModule";
 	private static final boolean DBG = TiConfig.LOGD;
 	private static TiApplication thisApp = null;
-
+	private final String LOG_TAG = "Tealium-Titanium-0.1";
+	private static final String TRACK_TYPE_EVENT = "link";
+	private static final String TRACK_TYPE_VIEW = "view";
 	// You can define constants with @Kroll.constant, for example:
 	// @Kroll.constant public static final String EXTERNAL_NAME = value;
 
@@ -73,15 +88,109 @@ public class TealiumTitaniumAndroidModule extends KrollModule
 		Tealium t = Tealium.createInstance(instanceName, config);
 	}
 
+	// track
+
+	private void track(String instanceName, String eventType, JSONObject dataLayer) {
+		try {
+				Map<String, Object> eventData = this.mapJSON(dataLayer);
+				String eventId = (String) eventData.get("link_id");
+				String screenTitle = (String) eventData.get("screen_title");
+				final Tealium instance = Tealium.getInstance(instanceName);
+
+				if (instanceName == null) {
+						Log.e(LOG_TAG, "Instance Name not specified. Please add a valid instance name to the tracking call.");
+				} else if (instance == null) {
+						Log.e(LOG_TAG, "Library failed to initialize correctly. Please check account/profile/environment combination in init call.");
+				} else if (eventType == null) {
+						Log.e(LOG_TAG, "Event type not specified. Please pass either link or view as event type");
+				} else {
+						if (eventType.toLowerCase().equals("view")) {
+								instance.trackView(screenTitle, eventData);
+						} else if (eventType.toLowerCase().equals("link")) {
+								instance.trackEvent(eventId, eventData);
+						}
+						// allows testing of crash tracking in sample app
+						// if (eventData.containsKey("forceCrash")) {
+						// 		triggerCrash();
+						// }
+				}
+		} catch (Throwable t){
+				Log.e(LOG_TAG, "Error attempting track call.", t);
+		}
+}
+
 	// trackEvent
+	@Kroll.method
+	public void trackEvent(String instanceName, String eventName, JSONObject dataLayer) {
+		if (eventName != null) {
+			try {
+					dataLayer.put("link_id", eventName);
+			} catch (JSONException e) {
+
+			}
+		}
+		track(instanceName, TRACK_TYPE_EVENT, dataLayer);
+	}
+
 
 	// trackView
+	@Kroll.method
+	public void trackView(String instanceName, String screenName, JSONObject dataLayer) {
+		if (screenName != null) {
+			try {
+					dataLayer.put("screen_title", screenName);
+			} catch (JSONException e) {
 
-  // trackLifecycle
-
-	// setPersistent
+			}
+		}
+		track(instanceName, TRACK_TYPE_VIEW, dataLayer);
+	}
 
 	// setVolatile
+	@Kroll.method
+	public void setVolatile(String instanceName, KrollDict data) {
+			final Tealium instance = Tealium.getInstance(instanceName);
+			if (data == null) {
+				return;
+			}
+			if (instance == null) {
+				return;
+			}
+			for (Map.Entry<String, Object> entry : data.entrySet()) {
+			    String keyName = entry.getKey();
+					Object value = entry.getValue();
+					if (value instanceof String) {
+						instance.getDataSources().getVolatileDataSources().put(keyName, (String) value);
+			    } else if (value instanceof Object[]) {
+			        Set<String> s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
+			        instance.getDataSources().getVolatileDataSources().put(keyName, s);
+			    }
+			}
+		}
+
+	// setPersistent
+	@Kroll.method
+	public void setPersistent(String instanceName, KrollDict data) {
+		final Tealium instance = Tealium.getInstance(instanceName);
+		if (data == null) {
+			return;
+		}
+		if (instance == null) {
+			return;
+		}
+		for (Map.Entry<String, Object> entry : data.entrySet()) {
+				    String keyName = entry.getKey();
+						Object value = entry.getValue();
+						if (value instanceof String) {
+				        instance.getDataSources().getPersistentDataSources().edit().putString(keyName, (String) value).apply();
+				    } else if (value instanceof Object[]) {
+				        Set<String> s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
+				        instance.getDataSources().getPersistentDataSources().edit().putStringSet(keyName, s).apply();
+				    }
+		}
+	}
+
+
 
 	// getVolatile
 
@@ -105,10 +214,124 @@ public class TealiumTitaniumAndroidModule extends KrollModule
 		return "hello world";
 	}
 
+	@Kroll.method
+	public String getDataType(Object o) {
+		String className = o.getClass().getName();
+		String convertedArray[] = null;
+		try {
+			Log.d(LCAT, "Attempting conversion");
+			convertedArray = TiConvert.toStringArray((Object[]) o);
+		} catch (Exception e) {
+			Log.d(LCAT, "Conversion Failed");
+		}
+		if (convertedArray != null) {
+			Log.d(LCAT, "Converted Array = " + String.join(",", convertedArray));
+			className = convertedArray.getClass().getName();
+		}
+		Log.d(LCAT, className);
+		return className;
+	}
+
+	@Kroll.method
+	public void printDataType(KrollDict dict, String key) {
+		Object value = dict.get(key);
+		String dataType = "";
+
+		if (value instanceof Object[]) {
+			dataType = "Object Array";
+			String arrayConverted = Arrays.toString(objectArrayToStringArray((Object[]) value));
+			Log.d(LCAT, "Array is: " + arrayConverted);
+		} else if (value instanceof String) {
+			dataType = "String";
+		} else if (value instanceof HashMap) {
+			dataType = "HashMap";
+		} else {
+			dataType = primitiveHelper(value);
+		}
+		Log.d(LCAT, "Data Type Is: " + dataType);
+	}
+
+	private String[] objectArrayToStringArray(Object[] objectArray) {
+		return Arrays.copyOf(objectArray, objectArray.length, String[].class);
+	}
+
+	private String primitiveHelper(Object o) {
+			try {
+				TiConvert.toInt(o);
+				return "int";
+			} catch (Exception a) {
+				try {
+					TiConvert.toBoolean(o);
+					return "boolean";
+				} catch (Exception b) {
+					try {
+						TiConvert.toFloat(o);
+						return "float";
+					} catch (Exception c) {
+						try {
+							TiConvert.toDouble(o);
+							return "double";
+						} catch (Exception d) {
+							return "";
+						}
+					}
+				}
+			}
+		}
 
 	@Kroll.setProperty
 	public void setExampleProp(String value) {
 		Log.d(LCAT, "set example property: " + value);
 	}
+
+	private Map<String, Object> mapJSON(JSONObject json) {
+        Map<String,Object> mapObject = null;
+        Iterator<?> keys = null;
+        if (json != null) {
+            mapObject = new HashMap<String,Object>(json.length());
+            keys = json.keys();
+        }
+
+        while(keys != null && keys.hasNext()){
+            String key = (String) keys.next();
+            Object value = json.opt(key);
+            mapObject.put(key,value);
+        }
+        return mapObject;
+    }
+
+		private Set<String> arrayListToStringSet (ArrayList<String> array) {
+        Set<String> strSet = new HashSet<String>();
+        for (int i = 0; i < array.size(); i++) {
+            try {
+                strSet.add(array.get(i));
+            } catch (Exception e) {
+                Log.e(LOG_TAG, e.toString());
+            }
+        }
+        return strSet;
+    }
+
+		private Set<String> stringArrayToStringSet (String[] array) {
+				Set<String> strSet = new HashSet<String>();
+				for (int i = 0; i < array.length; i++) {
+						try {
+								strSet.add(array[i]);
+						} catch (Exception e) {
+								Log.e(LCAT, e.toString());
+						}
+				}
+				return strSet;
+		}
+
+    private JSONArray stringSetToJsonArray (Set<?> setToConvert) {
+        JSONArray returnArray = new JSONArray();
+        for (Object item : setToConvert) {
+            if (item instanceof String) {
+                returnArray.put(item);
+            }
+        }
+        return returnArray;
+    }
 
 }
