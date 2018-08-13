@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <KrollBindings.h>
 
-#include "com.tealium.titaniumandroid.ExampleProxy.h"
 #include "com.tealium.titaniumandroid.TealiumTitaniumAndroidModule.h"
 
 
@@ -45,12 +44,10 @@ namespace titanium {
 
 		BindEntry* TealiumTitaniumAndroidBindings::lookupGeneratedInit(const char* name, unsigned int length) {
 			static BindEntry binds[] = {
-				{"com.tealium.titaniumandroid.TealiumTitaniumAndroidModule", ::com::tealium::titaniumandroid::TealiumTitaniumAndroidModule::bindProxy, ::com::tealium::titaniumandroid::TealiumTitaniumAndroidModule::dispose},
-				{"com.tealium.titaniumandroid.ExampleProxy", ::com::tealium::titaniumandroid::tealiumtitaniumandroid::ExampleProxy::bindProxy, ::com::tealium::titaniumandroid::tealiumtitaniumandroid::ExampleProxy::dispose}
+				{"com.tealium.titaniumandroid.TealiumTitaniumAndroidModule", ::com::tealium::titaniumandroid::TealiumTitaniumAndroidModule::bindProxy, ::com::tealium::titaniumandroid::TealiumTitaniumAndroidModule::dispose}
 			};
 			static std::unordered_map<const char*, BindEntry&, Hash, Compare> map = {
 				{binds[0].name, binds[0]},
-				{binds[1].name, binds[1]},
 			};
 
 			auto result = map.find(name);

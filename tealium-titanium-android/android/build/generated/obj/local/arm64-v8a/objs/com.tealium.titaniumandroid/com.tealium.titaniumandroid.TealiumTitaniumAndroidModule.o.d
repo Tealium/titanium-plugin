@@ -47,7 +47,6 @@
   /Users/craigrouse/Library/Android/sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include/__tree \
   /Users/craigrouse/Library/Android/sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include/functional \
   /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/V8Util.h \
-  jni/com.tealium.titaniumandroid.ExampleProxy.h \
   /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/org.appcelerator.kroll.KrollModule.h
 
 jni/com.tealium.titaniumandroid.TealiumTitaniumAndroidModule.h:
@@ -143,7 +142,5 @@ jni/com.tealium.titaniumandroid.TealiumTitaniumAndroidModule.h:
 /Users/craigrouse/Library/Android/sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include/functional:
 
 /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/V8Util.h:
-
-jni/com.tealium.titaniumandroid.ExampleProxy.h:
 
 /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/org.appcelerator.kroll.KrollModule.h:

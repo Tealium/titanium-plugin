@@ -1,5 +1,15 @@
 <Alloy>
-	<Window class="container">
-		<Label id="label" onClick="doClick">Hello, World</Label>
+	<Window class="container" title="Tealium Titanium Sample App">
+		<ListView style="Ti.UI.iOS.ListViewStyle.GROUPED" onItemclick="doClick">
+			<ListSection name="event_tracking" title="Tracking Examples">
+				<HeaderView>
+									<View backgroundColor="#DDD" height="Ti.UI.SIZE">
+											<Label>Tealium Titanium Sample App</Label>
+									</View>
+							</HeaderView>
+				<ListItem id="trackEvent" title="Track Event" />
+				<ListItem id="trackView" title="Track View" />
+			</ListSection>
+		</ListView>
 	</Window>
 </Alloy>

@@ -6,16 +6,17 @@
   <version>1.0</version>
   <publisher>not specified</publisher>
   <url>unspecified</url>
-  <description/>
+  <description>not specified</description>
   <copyright>not specified</copyright>
   <icon>appicon.png</icon>
   <fullscreen>false</fullscreen>
   <navbar-hidden>false</navbar-hidden>
   <analytics>true</analytics>
-  <guid>3db90015-480d-43d4-9222-40b31a41c9a7</guid>
+  <guid>d10c236b-64a4-42d3-9111-40b31a41c9a7</guid>
   <property name="ti.ui.defaultunit" type="string">dp</property>
   <property name="run-on-main-thread" type="bool">true</property>
   <ios>
+    <min-ios-ver>9.1</min-ios-ver>
     <enable-launch-screen-storyboard>true</enable-launch-screen-storyboard>
     <use-app-thinning>true</use-app-thinning>
     <plist>
@@ -43,19 +44,21 @@
     </plist>
   </ios>
   <android
-    xmlns:android="http://schemas.android.com/apk/res/android">
-  </android>
-  <modules>
-    <module platform="android">com.tealium.titaniumandroid</module>
-  </modules>
-  <deployment-targets>
-    <target device="android">true</target>
-    <target device="ipad">true</target>
-    <target device="iphone">true</target>
-  </deployment-targets>
-  <sdk-version>7.2.0.GA</sdk-version>
-  <plugins>
-    <plugin version="1.0">ti.alloy</plugin>
-  </plugins>
-  <property name="appc-app-id" type="string">5b50d6de61f11e5369e196ba</property>
-</ti:app>
+    xmlns:android="http://schemas.android.com/apk/res/android"/>
+    <manifest>
+    </manifest>
+    <modules>
+      <module platform="android">com.tealium.titaniumandroid</module>
+      <module platform="iphone">com.tealium.titaniumios</module>
+    </modules>
+    <deployment-targets>
+      <target device="android">true</target>
+      <target device="ipad">true</target>
+      <target device="iphone">true</target>
+    </deployment-targets>
+    <sdk-version>7.2.0.GA</sdk-version>
+    <plugins>
+      <plugin version="1.0">ti.alloy</plugin>
+    </plugins>
+    <property name="appc-app-id" type="string">5b56d467470ce7195748c50a</property>
+  </ti:app>

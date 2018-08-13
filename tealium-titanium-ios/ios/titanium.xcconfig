@@ -14,6 +14,10 @@ TITANIUM_BASE_SDK = "$(TITANIUM_SDK)/iphone/include"
 TITANIUM_BASE_SDK2 = "$(TITANIUM_SDK)/iphone/include/TiCore"
 TITANIUM_BASE_SDK3 = "$(TITANIUM_SDK)/iphone/include/JavaScriptCore"
 HEADER_SEARCH_PATHS= $(TITANIUM_BASE_SDK) $(TITANIUM_BASE_SDK2) $(TITANIUM_BASE_SDK3)
-
-
-
+FRAMEWORK_SEARCH_PATHS=$(SRCROOT)/../../modules/iphone/com.tealium.titaniumios/0.1/platform
+// /Library/Application\ Support/Titanium/modules/iphone/com.tealium.titaniumios/0.1/platform
+// ~/Library/Application\ Support/Titanium/modules/iphone/com.tealium.titaniumios/0.1/platform
+OTHER_LDFLAGS=$(inherited) -framework TealiumIOS
+OTHER_LDFLAGS=$(inherited) -framework TealiumIOSLifecycle
+//
+//

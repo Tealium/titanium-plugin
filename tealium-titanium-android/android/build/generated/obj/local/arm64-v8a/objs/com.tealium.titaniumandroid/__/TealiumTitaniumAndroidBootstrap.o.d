@@ -56,12 +56,11 @@
   /Users/craigrouse/Library/Android/sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include/__hash_table \
   /Users/craigrouse/Library/Android/sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include/cmath \
   /Users/craigrouse/Library/Android/sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include/math.h \
-  jni/com.tealium.titaniumandroid.ExampleProxy.h \
+  jni/com.tealium.titaniumandroid.TealiumTitaniumAndroidModule.h \
   /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/Proxy.h \
   /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/JavaObject.h \
   /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/EventEmitter.h \
-  /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/NativeObject.h \
-  jni/com.tealium.titaniumandroid.TealiumTitaniumAndroidModule.h
+  /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/NativeObject.h
 
 /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/v8.h:
 
@@ -177,7 +176,7 @@ jni/../KrollGeneratedBindings.cpp:
 
 /Users/craigrouse/Library/Android/sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include/math.h:
 
-jni/com.tealium.titaniumandroid.ExampleProxy.h:
+jni/com.tealium.titaniumandroid.TealiumTitaniumAndroidModule.h:
 
 /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/Proxy.h:
 
@@ -186,5 +185,3 @@ jni/com.tealium.titaniumandroid.ExampleProxy.h:
 /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/EventEmitter.h:
 
 /Users/craigrouse/Library/Application\ Support/Titanium/mobilesdk/osx/7.2.0.GA/android/native/include/NativeObject.h:
-
-jni/com.tealium.titaniumandroid.TealiumTitaniumAndroidModule.h:

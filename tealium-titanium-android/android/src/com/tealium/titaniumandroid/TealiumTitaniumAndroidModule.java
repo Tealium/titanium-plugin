@@ -16,8 +16,11 @@ import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.common.TiConfig;
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollFunction;
 import com.tealium.library.Tealium;
+import com.tealium.internal.tagbridge.RemoteCommand;
 import com.tealium.lifecycle.LifeCycle;
+import com.tealium.adidentifier.AdIdentifier;
 import android.webkit.WebView;
 import java.util.Map;
 import java.util.HashMap;
@@ -30,308 +33,278 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.content.Context;
+
 import java.lang.reflect.*;
 
-@Kroll.module(name="TealiumTitaniumAndroid", id="com.tealium.titaniumandroid")
-public class TealiumTitaniumAndroidModule extends KrollModule
-{
+@Kroll.module(name = "TealiumTitaniumAndroid", id = "com.tealium.titaniumandroid")
+public class TealiumTitaniumAndroidModule extends KrollModule {
 
-	// Standard Debugging variables
-	private static final String LCAT = "TealiumTitaniumAndroidModule";
-	private static final boolean DBG = TiConfig.LOGD;
-	private static TiApplication thisApp = null;
-	private final String LOG_TAG = "Tealium-Titanium-0.1";
-	private static final String TRACK_TYPE_EVENT = "link";
-	private static final String TRACK_TYPE_VIEW = "view";
-	// You can define constants with @Kroll.constant, for example:
-	// @Kroll.constant public static final String EXTERNAL_NAME = value;
+ // Standard Debugging variables
+ private static final String LCAT = "TealiumTitaniumAndroidModule";
+ private static final boolean DBG = TiConfig.LOGD;
+ private static TiApplication thisApp = null;
+ private final String LOG_TAG = "Tealium-Titanium-0.1";
+ private static final String TRACK_TYPE_EVENT = "link";
+ private static final String TRACK_TYPE_VIEW = "view";
+ private boolean isDevBuild = false;
+ private static Context appContext = null;
 
-	public TealiumTitaniumAndroidModule()
-	{
-		super();
-	}
+ public TealiumTitaniumAndroidModule() {
+  super();
+ }
 
-	@Kroll.onAppCreate
-	public static void onAppCreate(TiApplication app)
-	{
-		Log.d(LCAT, "inside onAppCreate");
-		// put module init code that needs to run when the application is created
-		thisApp = app;
-		WebView.setWebContentsDebuggingEnabled(true);
-	}
+ @Kroll.onAppCreate
+ public static void onAppCreate(TiApplication app) {
+  Log.d(LCAT, "inside onAppCreate");
+  thisApp = app;
+  // grab app context for Ad Identifier initialization
+  appContext = thisApp.getApplicationContext();
+ }
 
-	@Kroll.method
-	public void initTealium(String instanceName, String account, String profile, String env, String dataSourceId,
-													String collectDispatchURL, String collectDispatchProfile, boolean isLifecycleEnabled){
-		if (thisApp == null) {
-			return;
-		}
-		Tealium.Config config = Tealium.Config.create(thisApp, account, profile, env);
+ @Kroll.method
+ public void initTealium(final String instanceName, String account, String profile, String env, String dataSourceId,
+  String collectDispatchURL, String collectDispatchProfile, boolean isLifecycleEnabled, boolean isCrashReporterEnabled) {
+	// we can't initialize without an application handle
+	if (thisApp == null) {
+   return;
+  }
 
-		// full URL takes precedence over just the profile.
-		if (collectDispatchURL != null){
-				config.setOverrideCollectDispatchUrl(collectDispatchURL);
-		} else if (collectDispatchProfile != null) {
-				config.setOverrideCollectDispatchUrl("https://collect.tealiumiq.com/vdata/i.gif?tealium_account=" + account + "&tealium_profile=" + collectDispatchProfile);
-		}
+  if (env != null && env.equals("dev")) {
+   // enable webview debugging for dev environment only
+   WebView.setWebContentsDebuggingEnabled(true);
+   this.isDevBuild = true;
+  }
 
-		if (isLifecycleEnabled == true) {
-			LifeCycle.setupInstance(instanceName, config, isLifecycleEnabled);
-		}
+  Tealium.Config config = Tealium.Config.create(thisApp, account, profile, env);
 
-		if (dataSourceId != null) {
-        config.setDatasourceId(dataSourceId);
+  // full URL takes precedence over just the profile.
+  if (collectDispatchURL != null) {
+   config.setOverrideCollectDispatchUrl(collectDispatchURL);
+  } else if (collectDispatchProfile != null) {
+   config.setOverrideCollectDispatchUrl("https://collect.tealiumiq.com/vdata/i.gif?tealium_account=" + account + "&tealium_profile=" + collectDispatchProfile);
+  }
+
+  if (isLifecycleEnabled == true) {
+   LifeCycle.setupInstance(instanceName, config, isLifecycleEnabled);
+  }
+
+  if (dataSourceId != null) {
+   config.setDatasourceId(dataSourceId);
+  }
+
+  if (isCrashReporterEnabled) {
+   try {
+    // using reflection to check if optional crashreporter module is present in the app
+    Class << ? > crashReporter = Class.forName("com.tealium.crashreporter.CrashReporter");
+    Class[] cArg = new Class[3];
+    cArg[0] = String.class;
+    cArg[1] = Tealium.Config.class;
+    cArg[2] = boolean.class;
+    Method initCrashReporter = crashReporter.getDeclaredMethod("initialize", cArg);
+    initCrashReporter.setAccessible(true);
+    initCrashReporter.invoke(null, instanceName, config, false);
+   } catch (Exception e) {
+    Log.e(LCAT, "INFO: Tealium Crash Reporter module not found");
+   }
+  }
+  Tealium.createInstance(instanceName, config);
+ }
+
+ @Kroll.method
+ public void enableAdIdentifier(String instanceName, boolean persistent) {
+  if (appContext == null) {
+   return;
+  }
+  if (persistent) {
+   AdIdentifier.setIdPersistent(instanceName, appContext);
+  } else {
+   AdIdentifier.setIdVolatile(instanceName, appContext);
+  }
+ }
+
+ private void track(String instanceName, String eventType, KrollDict eventData) {
+  try {
+   String eventId = (String) eventData.get("link_id");
+   String screenTitle = (String) eventData.get("screen_title");
+   final Tealium instance = Tealium.getInstance(instanceName);
+
+   if (instanceName == null) {
+    Log.e(LOG_TAG, "Instance Name not specified. Please add a valid instance name to the tracking call.");
+   } else if (instance == null) {
+    Log.e(LOG_TAG, "Library failed to initialize correctly. Please check account/profile/environment combination in init call.");
+   } else if (eventType == null) {
+    Log.e(LOG_TAG, "Event type not specified. Please pass either link or view as event type");
+   } else {
+    if (eventType.toLowerCase().equals("view")) {
+     instance.trackView(screenTitle, eventData);
+    } else if (eventType.toLowerCase().equals("link")) {
+     instance.trackEvent(eventId, eventData);
     }
+   }
+  } catch (Throwable t) {
+   Log.e(LOG_TAG, "Error attempting track call.", t);
+  }
+ }
 
-		config.setForceOverrideLogLevel("dev");
+ @Kroll.method
+ public void triggerCrash() {
+  if (!this.isDevBuild) {
+   return;
+  }
+  final Handler handler = new Handler();
+  handler.postDelayed(new Runnable() {
+   @Override
+   public void run() {
+    throw new RuntimeException("Tealium Crash Triggered!");
+   }
+  }, 1000);
 
-		Tealium t = Tealium.createInstance(instanceName, config);
-	}
+ }
 
-	// track
+ @Kroll.method
+ public void trackEvent(String instanceName, String eventName, KrollDict dataLayer) {
+  if (eventName != null) {
+   dataLayer.put("link_id", eventName);
+  }
+  track(instanceName, TRACK_TYPE_EVENT, dataLayer);
+ }
 
-	private void track(String instanceName, String eventType, JSONObject dataLayer) {
-		try {
-				Map<String, Object> eventData = this.mapJSON(dataLayer);
-				String eventId = (String) eventData.get("link_id");
-				String screenTitle = (String) eventData.get("screen_title");
-				final Tealium instance = Tealium.getInstance(instanceName);
+ @Kroll.method
+ public void trackView(String instanceName, String screenName, KrollDict dataLayer) {
+  if (screenName != null) {
+   dataLayer.put("screen_title", screenName);
+  }
+  track(instanceName, TRACK_TYPE_VIEW, dataLayer);
+ }
 
-				if (instanceName == null) {
-						Log.e(LOG_TAG, "Instance Name not specified. Please add a valid instance name to the tracking call.");
-				} else if (instance == null) {
-						Log.e(LOG_TAG, "Library failed to initialize correctly. Please check account/profile/environment combination in init call.");
-				} else if (eventType == null) {
-						Log.e(LOG_TAG, "Event type not specified. Please pass either link or view as event type");
-				} else {
-						if (eventType.toLowerCase().equals("view")) {
-								instance.trackView(screenTitle, eventData);
-						} else if (eventType.toLowerCase().equals("link")) {
-								instance.trackEvent(eventId, eventData);
-						}
-						// allows testing of crash tracking in sample app
-						// if (eventData.containsKey("forceCrash")) {
-						// 		triggerCrash();
-						// }
-				}
-		} catch (Throwable t){
-				Log.e(LOG_TAG, "Error attempting track call.", t);
-		}
-}
+ @Kroll.method
+ public void setVolatile(String instanceName, KrollDict data) {
+  final Tealium instance = Tealium.getInstance(instanceName);
+  if (data == null) {
+   return;
+  }
+  if (instance == null) {
+   return;
+  }
+  for (Map.Entry < String, Object > entry: data.entrySet()) {
+   String keyName = entry.getKey();
+   Object value = entry.getValue();
+   if (value instanceof String) {
+    instance.getDataSources().getVolatileDataSources().put(keyName, (String) value);
+   } else if (value instanceof Object[]) {
+    Set < String > s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
+    instance.getDataSources().getVolatileDataSources().put(keyName, s);
+   } else if (value instanceof HashMap) {
+    HashMap < String, Object > obj = (HashMap < String, Object > ) value;
+    instance.getDataSources().getVolatileDataSources().put(keyName, obj);
+   }
+  }
+ }
 
-	// trackEvent
-	@Kroll.method
-	public void trackEvent(String instanceName, String eventName, JSONObject dataLayer) {
-		if (eventName != null) {
-			try {
-					dataLayer.put("link_id", eventName);
-			} catch (JSONException e) {
+ @Kroll.method
+ public void setPersistent(String instanceName, KrollDict data) {
+  final Tealium instance = Tealium.getInstance(instanceName);
+  if (data == null) {
+   return;
+  }
+  if (instance == null) {
+   return;
+  }
+  for (Map.Entry < String, Object > entry: data.entrySet()) {
+   String keyName = entry.getKey();
+   Object value = entry.getValue();
+   if (value instanceof String) {
+    instance.getDataSources().getPersistentDataSources().edit().putString(keyName, (String) value).apply();
+   } else if (value instanceof Object[]) {
+    Set < String > s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
+    instance.getDataSources().getPersistentDataSources().edit().putStringSet(keyName, s).apply();
+   }
+  }
+ }
 
-			}
-		}
-		track(instanceName, TRACK_TYPE_EVENT, dataLayer);
-	}
+ @Kroll.method
+ public Object getVolatile(String instanceName, String keyName) {
+  final Tealium instance = Tealium.getInstance(instanceName);
+  if (keyName == null) {
+   return null;
+  }
+  if (instance == null) {
+   return null;
+  }
 
+  Object value = instance.getDataSources().getVolatileDataSources().get(keyName);
+  if (value instanceof String) {
+   return (String) value;
+  } else if (value instanceof HashSet) {
+   return ((HashSet) value).toArray(new String[0]);
+  } else if (value instanceof HashMap) {
+   return (HashMap < String, Object > ) value;
+  }
+  return null;
+ }
 
-	// trackView
-	@Kroll.method
-	public void trackView(String instanceName, String screenName, JSONObject dataLayer) {
-		if (screenName != null) {
-			try {
-					dataLayer.put("screen_title", screenName);
-			} catch (JSONException e) {
+ @Kroll.method
+ public Object getPersistent(String instanceName, String keyName) {
+  final Tealium instance = Tealium.getInstance(instanceName);
+  if (keyName == null) {
+   return null;
+  }
+  if (instance == null) {
+   return null;
+  }
 
-			}
-		}
-		track(instanceName, TRACK_TYPE_VIEW, dataLayer);
-	}
+  SharedPreferences persistent = instance.getDataSources().getPersistentDataSources();
+  Map < String, ? > allPersistentData = persistent.getAll();
+  Object value = allPersistentData.get(keyName);
 
-	// setVolatile
-	@Kroll.method
-	public void setVolatile(String instanceName, KrollDict data) {
-			final Tealium instance = Tealium.getInstance(instanceName);
-			if (data == null) {
-				return;
-			}
-			if (instance == null) {
-				return;
-			}
-			for (Map.Entry<String, Object> entry : data.entrySet()) {
-			    String keyName = entry.getKey();
-					Object value = entry.getValue();
-					if (value instanceof String) {
-						instance.getDataSources().getVolatileDataSources().put(keyName, (String) value);
-			    } else if (value instanceof Object[]) {
-			        Set<String> s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
-			        instance.getDataSources().getVolatileDataSources().put(keyName, s);
-			    }
-			}
-		}
+  if (value instanceof String) {
+   return (String) value;
+  } else if (value instanceof HashSet) {
+   return ((HashSet) value).toArray(new String[0]);
+  }
+  return null;
+ }
 
-	// setPersistent
-	@Kroll.method
-	public void setPersistent(String instanceName, KrollDict data) {
-		final Tealium instance = Tealium.getInstance(instanceName);
-		if (data == null) {
-			return;
-		}
-		if (instance == null) {
-			return;
-		}
-		for (Map.Entry<String, Object> entry : data.entrySet()) {
-				    String keyName = entry.getKey();
-						Object value = entry.getValue();
-						if (value instanceof String) {
-				        instance.getDataSources().getPersistentDataSources().edit().putString(keyName, (String) value).apply();
-				    } else if (value instanceof Object[]) {
-				        Set<String> s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
-				        instance.getDataSources().getPersistentDataSources().edit().putStringSet(keyName, s).apply();
-				    }
-		}
-	}
+ @Kroll.method
+ public void addRemoteCommand(final String instanceName, final String commandId, final KrollFunction callback) {
+  final Tealium instance = Tealium.getInstance(instanceName);
+  final Handler handler = new Handler();
+  handler.postDelayed(new Runnable() {
+   @Override
+   public void run() {
+    instance.addRemoteCommand(new RemoteCommand(commandId, "Auto generated Cordova remote command") {
+     @Override
+     protected void onInvoke(Response response) throws Exception {
+      JSONObject resp = response.getRequestPayload();
+      String jsonString = resp.toString();
+      // HashMap responseData = new HashMap();
+      // responseData.put("response", (String) jsonString);
+      String[] responseData = {
+       jsonString
+      };
+      callback.call(getKrollObject(), responseData);
+     }
+    });
+   }
+  }, 500);
+ }
 
+ private String[] objectArrayToStringArray(Object[] objectArray) {
+  return Arrays.copyOf(objectArray, objectArray.length, String[].class);
+ }
 
-
-	// getVolatile
-
-	// getPersistent
-
-	// addRemoteCommand
-
-	// Methods
-	@Kroll.method
-	public String example()
-	{
-		Log.d(LCAT, "example called");
-		return "hello world";
-	}
-
-	// Properties
-	@Kroll.getProperty
-	public String getExampleProp()
-	{
-		Log.d(LCAT, "get example property");
-		return "hello world";
-	}
-
-	@Kroll.method
-	public String getDataType(Object o) {
-		String className = o.getClass().getName();
-		String convertedArray[] = null;
-		try {
-			Log.d(LCAT, "Attempting conversion");
-			convertedArray = TiConvert.toStringArray((Object[]) o);
-		} catch (Exception e) {
-			Log.d(LCAT, "Conversion Failed");
-		}
-		if (convertedArray != null) {
-			Log.d(LCAT, "Converted Array = " + String.join(",", convertedArray));
-			className = convertedArray.getClass().getName();
-		}
-		Log.d(LCAT, className);
-		return className;
-	}
-
-	@Kroll.method
-	public void printDataType(KrollDict dict, String key) {
-		Object value = dict.get(key);
-		String dataType = "";
-
-		if (value instanceof Object[]) {
-			dataType = "Object Array";
-			String arrayConverted = Arrays.toString(objectArrayToStringArray((Object[]) value));
-			Log.d(LCAT, "Array is: " + arrayConverted);
-		} else if (value instanceof String) {
-			dataType = "String";
-		} else if (value instanceof HashMap) {
-			dataType = "HashMap";
-		} else {
-			dataType = primitiveHelper(value);
-		}
-		Log.d(LCAT, "Data Type Is: " + dataType);
-	}
-
-	private String[] objectArrayToStringArray(Object[] objectArray) {
-		return Arrays.copyOf(objectArray, objectArray.length, String[].class);
-	}
-
-	private String primitiveHelper(Object o) {
-			try {
-				TiConvert.toInt(o);
-				return "int";
-			} catch (Exception a) {
-				try {
-					TiConvert.toBoolean(o);
-					return "boolean";
-				} catch (Exception b) {
-					try {
-						TiConvert.toFloat(o);
-						return "float";
-					} catch (Exception c) {
-						try {
-							TiConvert.toDouble(o);
-							return "double";
-						} catch (Exception d) {
-							return "";
-						}
-					}
-				}
-			}
-		}
-
-	@Kroll.setProperty
-	public void setExampleProp(String value) {
-		Log.d(LCAT, "set example property: " + value);
-	}
-
-	private Map<String, Object> mapJSON(JSONObject json) {
-        Map<String,Object> mapObject = null;
-        Iterator<?> keys = null;
-        if (json != null) {
-            mapObject = new HashMap<String,Object>(json.length());
-            keys = json.keys();
-        }
-
-        while(keys != null && keys.hasNext()){
-            String key = (String) keys.next();
-            Object value = json.opt(key);
-            mapObject.put(key,value);
-        }
-        return mapObject;
-    }
-
-		private Set<String> arrayListToStringSet (ArrayList<String> array) {
-        Set<String> strSet = new HashSet<String>();
-        for (int i = 0; i < array.size(); i++) {
-            try {
-                strSet.add(array.get(i));
-            } catch (Exception e) {
-                Log.e(LOG_TAG, e.toString());
-            }
-        }
-        return strSet;
-    }
-
-		private Set<String> stringArrayToStringSet (String[] array) {
-				Set<String> strSet = new HashSet<String>();
-				for (int i = 0; i < array.length; i++) {
-						try {
-								strSet.add(array[i]);
-						} catch (Exception e) {
-								Log.e(LCAT, e.toString());
-						}
-				}
-				return strSet;
-		}
-
-    private JSONArray stringSetToJsonArray (Set<?> setToConvert) {
-        JSONArray returnArray = new JSONArray();
-        for (Object item : setToConvert) {
-            if (item instanceof String) {
-                returnArray.put(item);
-            }
-        }
-        return returnArray;
-    }
-
+ private Set < String > stringArrayToStringSet(String[] array) {
+  Set < String > strSet = new HashSet < String > ();
+  for (int i = 0; i < array.length; i++) {
+   try {
+    strSet.add(array[i]);
+   } catch (Exception e) {
+    Log.e(LCAT, e.toString());
+   }
+  }
+  return strSet;
+ }
 }

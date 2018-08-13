@@ -32,16 +32,16 @@ private:
 	// Methods -----------------------------------------------------------
 	static void initTealium(const v8::FunctionCallbackInfo<v8::Value>&);
 	static void trackView(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void getPersistent(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void enableAdIdentifier(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void getVolatile(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void triggerCrash(const v8::FunctionCallbackInfo<v8::Value>&);
 	static void setVolatile(const v8::FunctionCallbackInfo<v8::Value>&);
-	static void getDataType(const v8::FunctionCallbackInfo<v8::Value>&);
 	static void setPersistent(const v8::FunctionCallbackInfo<v8::Value>&);
 	static void trackEvent(const v8::FunctionCallbackInfo<v8::Value>&);
-	static void printDataType(const v8::FunctionCallbackInfo<v8::Value>&);
-	static void example(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void addRemoteCommand(const v8::FunctionCallbackInfo<v8::Value>&);
 
 	// Dynamic property accessors ----------------------------------------
-	static void getter_exampleProp(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info);
-	static void setter_exampleProp(v8::Local<v8::Name> name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info);
 
 };
 
