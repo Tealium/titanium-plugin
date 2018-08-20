@@ -7,7 +7,7 @@ apiversion: 2
 architectures: armv7 arm64 i386 x86_64
 description: tealium-titanium-ios
 author: Tealium, Inc.
-license: Specify your license
+license: https://github.com/Tealium/titanium-plugin/blob/master/LICENSE.txt
 copyright: Tealium, Inc.
 
 # these should not be edited

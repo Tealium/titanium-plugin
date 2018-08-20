@@ -1,6 +1,6 @@
 <Alloy>
 	<Window class="container" title="Tealium Titanium Sample App">
-		<ListView style="Ti.UI.iOS.ListViewStyle.GROUPED" onItemclick="doClick">
+		<ListView if="Ti.Platform.name === 'iOS' || Ti.Platform.name === 'iPhone OS'" style="Ti.UI.iOS.ListViewStyle.GROUPED" onItemclick="doClick">
 			<ListSection name="event_tracking" title="Tracking Examples">
 				<HeaderView>
 									<View backgroundColor="#DDD" height="Ti.UI.SIZE">
@@ -11,5 +11,9 @@
 				<ListItem id="trackView" title="Track View" />
 			</ListSection>
 		</ListView>
+		<TableView if="Ti.Platform.name === 'android'">
+			<TableViewRow onClick="trackEvent" width="Ti.UI.FILL" height="60"><Label>Track Event</Label></TableViewRow>
+			<TableViewRow onClick="trackView" width="Ti.UI.FILL" height="60"><Label>Track View</Label></TableViewRow>
+		</TableView>
 	</Window>
 </Alloy>

@@ -41,9 +41,9 @@
 #pragma Public APIs
 
 - (void)initTealium:(id)args {
-    
+
     NSLog(@"[INFO] Inside initTealium method");
-    
+
     NSString* instanceName = [args objectAtIndex:0];
     NSString* account = [args objectAtIndex:1];
     NSString* profile = [args objectAtIndex:2];
@@ -76,22 +76,22 @@
     } else {
         [instance addVolatileDataSources:[self getIdentifiers]];
     }
-    
+
 }
 
 - (NSDictionary *) getIdentifiers {
-    
+
     NSString* idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     NSString* idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
     BOOL adTrackingEnabled = [[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled];
     NSString* adTracking = adTrackingEnabled == YES ? @"true" : @"false";
-    
+
     NSDictionary* dict = @{
                            @"device_advertising_id": idfa,
                            @"device_advertising_vendor_id": idfv,
                            @"device_advertising_enabled": adTracking
                            };
-    
+
     return dict;
 }
 
@@ -131,8 +131,27 @@
     NSString* instanceName = [args objectAtIndex:0];
     Tealium* instance = [self getInstance:instanceName];
     ENSURE_DICT([args objectAtIndex:1]);
-    NSDictionary* dataLayer = [args objectAtIndex:1];
+    NSMutableDictionary* dataLayer = [args objectAtIndex:1];
+    NSArray* emptyKeys = [self checkIfEmpty:dataLayer];
+    if ([emptyKeys count] > 0) {
+      [instance removePersistentDataSourcesForKeys: emptyKeys];
+      for (id item in emptyKeys) {
+        if ([item isKindOfClass:[NSString class]]) {
+          [dataLayer removeObjectForKey: item];
+        }
+      }
+    }
     [instance addPersistentDataSources:dataLayer];
+}
+
+- (NSArray*)checkIfEmpty:(NSDictionary *) data {
+  NSMutableArray* nullKeys = [[NSMutableArray alloc] init];
+  for (NSString* key in data) {
+    if (data[key] == nil || ([data[key] isKindOfClass:[NSString class]] && [data[key] isEqualToString: @""]) || [data[key] isKindOfClass:[NSNull class]]) {
+      [nullKeys addObject:key];
+    }
+  }
+  return nullKeys;
 }
 
 - (id)getVolatile:(id)args {
@@ -142,7 +161,7 @@
     ENSURE_STRING([args objectAtIndex:1]);
     NSString* key = [args objectAtIndex:1];
     return [[instance volatileDataSourcesCopy] objectForKey:key];
-    
+
 }
 
 - (id)getPersistent:(id)args {
@@ -163,12 +182,12 @@
     KrollCallback* callback = [args objectAtIndex:2];
     [instance addRemoteCommandID:commandId description:@"Titanium Remote Command" targetQueue:dispatch_get_main_queue() responseBlock:^(TEALRemoteCommandResponse * _Nonnull response) {
         NSDictionary* tagBridgeResponse = [response requestPayload];
-        
+
         NSError *error;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:tagBridgeResponse
                                                            options:0 // Pass 0 if you don't care about the readability of the generated string
                                                              error:&error];
-        
+
         if (! jsonData) {
             NSLog(@"Got an error: %@", error);
         } else {

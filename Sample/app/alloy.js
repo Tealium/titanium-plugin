@@ -13,12 +13,15 @@ var tealium;
 var typeOf = function(e) {
                 return ({}).toString.call(e).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
             };
-if (Ti.Platform.name == "android") {
+// initialize the relevant plugin for the current platform
+if (Ti.Platform.name === "android") {
   tealium = require("com.tealium.titaniumandroid");
-} else if (Ti.Platform.name == "iOS" || Ti.Platform.name == "iPhone OS") {
+} else if (Ti.Platform.name === "iOS" || Ti.Platform.name === "iPhone OS") {
   tealium = require("com.tealium.titaniumios");
 }
-tealium.initTealium("main", "tealiummobile", "demo", "dev", "bbb111", null, null, true, true);
+// params: instance name, account, profile, environment, data source,
+tealium.initTealium("main", "tealiummobile", "demo", "dev", "bbb111", null, null, true, true, true);
+tealium.setUserConsentCategories("main",["analytics", "affiliates", "big_data", "cdp", "cookiematch", "crm", "displayads", "email", "engagement", "mobile", "monitoring", "personalization", "search", "social", "misc"]);
 // // var tealium = require("com.tealium.titaniumandroid");/*
 // tealium.initTealium("main","tealiummobile", "demo", "dev", "abc123", null, null, true, true);
 // // setTimeout(function(){tealium.triggerCrash()},6000);

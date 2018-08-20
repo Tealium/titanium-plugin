@@ -21,6 +21,7 @@ import com.tealium.library.Tealium;
 import com.tealium.internal.tagbridge.RemoteCommand;
 import com.tealium.lifecycle.LifeCycle;
 import com.tealium.adidentifier.AdIdentifier;
+import com.tealium.library.ConsentManager;
 import android.webkit.WebView;
 import java.util.Map;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
 
  @Kroll.method
  public void initTealium(final String instanceName, String account, String profile, String env, String dataSourceId,
-  String collectDispatchURL, String collectDispatchProfile, boolean isLifecycleEnabled, boolean isCrashReporterEnabled) {
+  String collectDispatchURL, String collectDispatchProfile, boolean isLifecycleEnabled, boolean isCrashReporterEnabled, boolean isConsentManagerEnabled) {
 	// we can't initialize without an application handle
 	if (thisApp == null) {
    return;
@@ -91,6 +92,10 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
    LifeCycle.setupInstance(instanceName, config, isLifecycleEnabled);
   }
 
+  if (isConsentManagerEnabled == true) {
+    config.enableConsentManager(instanceName);
+  }
+
   if (dataSourceId != null) {
    config.setDatasourceId(dataSourceId);
   }
@@ -98,7 +103,7 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
   if (isCrashReporterEnabled) {
    try {
     // using reflection to check if optional crashreporter module is present in the app
-    Class << ? > crashReporter = Class.forName("com.tealium.crashreporter.CrashReporter");
+    Class < ? > crashReporter = Class.forName("com.tealium.crashreporter.CrashReporter");
     Class[] cArg = new Class[3];
     cArg[0] = String.class;
     cArg[1] = Tealium.Config.class;
@@ -112,6 +117,98 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
   }
   Tealium.createInstance(instanceName, config);
  }
+
+@Kroll.method
+public void setUserConsentStatus (String instanceName, String consentStatus) {
+  if (consentStatus.equals("consented")) {
+    Tealium.getInstance(instanceName).getConsentManager().setUserConsentStatus(ConsentManager.ConsentStatus.CONSENTED);
+  } else if (consentStatus.equals("notConsented")) {
+    Tealium.getInstance(instanceName).getConsentManager().setUserConsentStatus(ConsentManager.ConsentStatus.NOT_CONSENTED);
+  }
+}
+
+@Kroll.method
+public void setUserConsentCategories(String instanceName, String[] consentCategories) {
+  String[] validCategories = getValidConsentCategories(consentCategories);
+  Tealium.getInstance(instanceName).getConsentManager().setUserConsentCategories(validCategories);
+}
+
+private String[] getValidConsentCategories (String[] categories) {
+  String[] validCategories = new String[30]; // allow filtering out of additional categories provided in error
+  int count = 0;
+  for (int i = 0; i < categories.length; i++) {
+    count = count +1;
+    switch (categories[i]) {
+      case "analytics": validCategories[i] = ConsentManager.ConsentCategory.ANALYTICS;
+            break;
+      case "affiliates": validCategories[i] = ConsentManager.ConsentCategory.AFFILIATES;
+            break;
+      case "big_data": validCategories[i] = ConsentManager.ConsentCategory.BIG_DATA;
+            break;
+      case "cdp": validCategories[i] = ConsentManager.ConsentCategory.CDP;
+            break;
+      case "cookiematch": validCategories[i] = ConsentManager.ConsentCategory.COOKIEMATCH;
+            break;
+      case "crm": validCategories[i] = ConsentManager.ConsentCategory.CRM;
+            break;
+      case "displayads": validCategories[i] = ConsentManager.ConsentCategory.DISPLAY_ADS;
+            break;
+      case "email": validCategories[i] = ConsentManager.ConsentCategory.EMAIL;
+            break;
+      case "engagement": validCategories[i] = ConsentManager.ConsentCategory.ENGAGEMENT;
+            break;
+      case "mobile": validCategories[i] = ConsentManager.ConsentCategory.MOBILE;
+            break;
+      case "monitoring": validCategories[i] = ConsentManager.ConsentCategory.MONITORING;
+            break;
+      case "personalization": validCategories[i] = ConsentManager.ConsentCategory.PERSONALIZATION;
+            break;
+      case "search": validCategories[i] = ConsentManager.ConsentCategory.SEARCH;
+            break;
+      case "social": validCategories[i] = ConsentManager.ConsentCategory.SOCIAL;
+            break;
+      case "misc": validCategories[i] = ConsentManager.ConsentCategory.MISC;
+            break;
+      default: validCategories[i] = null;
+              count = count -1;
+            break;
+    }
+  }
+  String[] filteredCategories = new String[count];
+    for (String s: validCategories) {
+      if (s != null) {
+        filteredCategories[count - 1] = s;
+        count = count - 1;
+      }
+    }
+  return filteredCategories;
+}
+
+@Kroll.method
+public void resetUserConsentPreferences(String instanceName, String[] consentCategories) {
+  Tealium.getInstance(instanceName).getConsentManager().resetUserConsentPreferences();
+}
+
+@Kroll.method
+public String[] getUserConsentCategories(String instanceName) {
+  return Tealium.getInstance(instanceName).getConsentManager().getUserConsentCategories();
+}
+
+@Kroll.method
+public String getUserConsentStatus(String instanceName) {
+  return Tealium.getInstance(instanceName).getConsentManager().getUserConsentStatus();
+}
+
+@Kroll.method
+public void setUserConsentPolicy(String instanceName, String policy) {
+  Tealium.getInstance(instanceName).getConsentManager().setPolicy(policy);
+}
+
+@Kroll.method
+public String getUserConsentPolicy(String instanceName) {
+  return Tealium.getInstance(instanceName).getConsentManager().getPolicy();
+}
+
 
  @Kroll.method
  public void enableAdIdentifier(String instanceName, boolean persistent) {
@@ -192,8 +289,15 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
   for (Map.Entry < String, Object > entry: data.entrySet()) {
    String keyName = entry.getKey();
    Object value = entry.getValue();
+   if (value == null) {
+     value = "";
+   }
    if (value instanceof String) {
-    instance.getDataSources().getVolatileDataSources().put(keyName, (String) value);
+     if (value.equals("")) {
+       instance.getDataSources().getVolatileDataSources().remove(keyName);
+     } else {
+        instance.getDataSources().getVolatileDataSources().put(keyName, (String) value);
+     }
    } else if (value instanceof Object[]) {
     Set < String > s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
     instance.getDataSources().getVolatileDataSources().put(keyName, s);
@@ -216,8 +320,15 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
   for (Map.Entry < String, Object > entry: data.entrySet()) {
    String keyName = entry.getKey();
    Object value = entry.getValue();
+   if (value == null) {
+     value = "";
+   }
    if (value instanceof String) {
-    instance.getDataSources().getPersistentDataSources().edit().putString(keyName, (String) value).apply();
+     if (value.equals("")) {
+       instance.getDataSources().getPersistentDataSources().edit().remove(keyName).apply();
+     } else {
+        instance.getDataSources().getPersistentDataSources().edit().putString(keyName, (String) value).apply();
+     }
    } else if (value instanceof Object[]) {
     Set < String > s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
     instance.getDataSources().getPersistentDataSources().edit().putStringSet(keyName, s).apply();
@@ -275,7 +386,7 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
   handler.postDelayed(new Runnable() {
    @Override
    public void run() {
-    instance.addRemoteCommand(new RemoteCommand(commandId, "Auto generated Cordova remote command") {
+    instance.addRemoteCommand(new RemoteCommand(commandId, "Auto generated Titanium remote command") {
      @Override
      protected void onInvoke(Response response) throws Exception {
       JSONObject resp = response.getRequestPayload();
