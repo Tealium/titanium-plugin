@@ -21,24 +21,6 @@ if (Ti.Platform.name === "android") {
 }
 // params: instance name, account, profile, environment, data source,
 tealium.initTealium("main", "tealiummobile", "demo", "dev", "bbb111", null, null, true, true, true);
-tealium.setUserConsentCategories("main",["analytics", "affiliates", "big_data", "cdp", "cookiematch", "crm", "displayads", "email", "engagement", "mobile", "monitoring", "personalization", "search", "social", "misc"]);
-// // var tealium = require("com.tealium.titaniumandroid");/*
-// tealium.initTealium("main","tealiummobile", "demo", "dev", "abc123", null, null, true, true);
-// // setTimeout(function(){tealium.triggerCrash()},6000);
-//
-// tealium.addRemoteCommand("main", "logger", function(response){
-//   alert("tagbridge called!");
-// });
-tealium.addRemoteCommand("main", "log", function(response){
-  alert("Remote command 'log' called!");
-  if (typeOf(response) === "string") {
-    response = JSON.parse(response);
-  }
-  if (response.response) {
-    console.log("response.response is: " + response.response);
-    alert("Response: " + response.command_id);
-  }
-});
 tealium.setVolatile("main", {"zzzstringvolatile": "I've Changed"});
 tealium.setVolatile("main", {"zzzarraynew": ["I've Changed", "again"]});
 tealium.setVolatile("main", {"hello": {"hello":["I've Changed", "again"]}});
@@ -56,28 +38,3 @@ tealium.enableAdIdentifier("main", false);
 //     }
 // });
 // Ti.Android.registerBroadcastReceiver(installReferrerReceiver, ["com.android.vending.INSTALL_REFERRER"]);
-setTimeout(function(){
-  alert(tealium.getVolatile("main", "zzzstringvolatile"));
-}, 1000);
-setTimeout(function(){
-  var item = tealium.getVolatile("main", "zzzarraynew");
-  item = item.toString();
-  alert("Item is: " + item);
-}, 2000);
-setTimeout(function(){
-  var item = tealium.getVolatile("main", "hello");
-  item = item["hello"];
-  item = item.toString();
-  alert("Item is: " + item);
-}, 2000);
-setTimeout(function(){
-  var item = tealium.getPersistent("main", "zzzstring");
-  alert("Item is: " + item);
-}, 2000);
-setTimeout(function(){
-  var item = tealium.getPersistent("main", "zzzarraypersist");
-  item = item.toString();
-  alert("Item is: " + item);
-}, 4000);
-tealium.trackView("main", "Hello", {"ahello": "Craig"});
-tealium.trackEvent("main", "MyTealiumEvent", {"zzzhi": "Craig"});

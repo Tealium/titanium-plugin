@@ -9,11 +9,17 @@
 							</HeaderView>
 				<ListItem id="trackEvent" title="Track Event" />
 				<ListItem id="trackView" title="Track View" />
+				<ListItem id="setOptIn" title="Set Consent Status: Consented" />
+				<ListItem id="setOptOut" title="Set Consent Status: Not Consented" />
+				<ListItem id="setOptInWithCategories" title="Set Consent Categories: Analytics, Personalization" />
 			</ListSection>
 		</ListView>
 		<TableView if="Ti.Platform.name === 'android'">
 			<TableViewRow onClick="trackEvent" width="Ti.UI.FILL" height="60"><Label>Track Event</Label></TableViewRow>
 			<TableViewRow onClick="trackView" width="Ti.UI.FILL" height="60"><Label>Track View</Label></TableViewRow>
+			<TableViewRow onClick="setOptIn" width="Ti.UI.FILL" height="60"><Label>Set Consent Status: Consented</Label></TableViewRow>
+			<TableViewRow onClick="setOptOut" width="Ti.UI.FILL" height="60"><Label>Set Consent Status: Not Consented</Label></TableViewRow>
+			<TableViewRow onClick="setOptInWithCategories" width="Ti.UI.FILL" height="60"><Label>Set Consent Categories: Analytics, Personalization</Label></TableViewRow>
 		</TableView>
 	</Window>
 </Alloy>

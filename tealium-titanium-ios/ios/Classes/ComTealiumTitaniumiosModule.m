@@ -31,11 +31,8 @@
 
 - (void)startup
 {
-  // This method is called when the module is first loaded
-  // You *must* call the superclass
   [super startup];
   DebugLog(@"[DEBUG] %@ loaded", self);
-    // [self initTealium:nil];
 }
 
 #pragma Public APIs
@@ -52,22 +49,101 @@
     NSString* collectDispatchURL = [args objectAtIndex:5];
     NSString* collectDispatchProfile = [args objectAtIndex:6];
     NSString* isLifecycleEnabled = [args objectAtIndex:7];
-
+    BOOL isConsentManagerEnabled = [args objectAtIndex: 9]; // skips to 9 as we don't have a crash module in Obj-C
     TEALConfiguration *tealConfig = [TEALConfiguration configurationWithAccount:account
                                                                         profile:profile
                                                                     environment:env
                                                                      datasource:dataSourceId];
+    if (isConsentManagerEnabled == YES) {
+        [tealConfig setEnableConsentManager: YES];
+    }
     // Initialize with a unique key for this instance
     Tealium *tealium = [Tealium newInstanceForKey:instanceName configuration:tealConfig];
-    DebugLog(@"[INFO] Tealium Loaded in initTealium method");
-    // TealiumHelper* helper = [TealiumHelper shared];
-    //[helper start:account :profile :env :dataSourceId :nil :nil :true];
-    // [helper start];
 }
 
+- (void)setUserConsentStatus:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    NSString* consentStatus = [args objectAtIndex:1];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        TEALConsentStatus* status = NotConsented;
+        if ([consentStatus isEqualToString:@"consented"]) {
+            status = Consented;
+        }
+        [instance.consentManager setUserConsentStatus: status];
+    }
+}
+
+- (void)setUserConsentCategories:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    NSArray* consentCategories = [args objectAtIndex:1];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        [instance.consentManager setUserConsentCategories:consentCategories];
+    }
+}
+
+- (NSString*)getUserConsentStatus:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        return [TEALConsentManager consentStatusString:[instance.consentManager userConsentStatus]];
+    }
+}
+
+- (NSArray*)getUserConsentCategories:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        return [instance.consentManager userConsentCategories];
+    }
+}
+
+- (void)resetUserConsentPreferences:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        [instance.consentManager resetUserConsentPreferences];
+    }
+}
+
+- (void)setUserConsentPolicy:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    NSString* consentPolicy = [args objectAtIndex:1];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        [instance addPersistentDataSources:@{@"policy":consentPolicy}];
+    }
+}
+
+- (void)resetUserConsentPolicy:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        [instance removeVolatileDataSourcesForKeys:@[@"policy"]];
+    }
+}
+
+- (NSString*)getUserConsentPolicy:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        return [[instance persistentDataSourcesCopy] objectForKey:@"policy"];
+    }
+    return nil;
+}
+
+- (void) setConsentLoggingEnabled:(id)args {
+    NSString* instanceName = [args objectAtIndex:0];
+    BOOL isEnabled = [args objectAtIndex:1];
+    Tealium* instance = [Tealium instanceForKey:instanceName];
+    if (instance != nil) {
+        [instance.consentManager setConsentLoggingEnabled:isEnabled];
+    }
+}
 
 - (void)enableAdIdentifier:(id)args {
-    ENSURE_STRING([args objectAtIndex:0]);
+    //ENSURE_STRING([args objectAtIndex:0]);
     NSString* instanceName = [args objectAtIndex:0];
     BOOL persist = [args objectAtIndex:1];
     Tealium* instance = [self getInstance:instanceName];
@@ -76,7 +152,6 @@
     } else {
         [instance addVolatileDataSources:[self getIdentifiers]];
     }
-
 }
 
 - (NSDictionary *) getIdentifiers {
@@ -100,7 +175,6 @@
 }
 
 - (void)trackView:(id)args {
-    ENSURE_STRING([args objectAtIndex:0]);
     NSString* instanceName = [args objectAtIndex:0];
     Tealium* instance = [self getInstance:instanceName];
     NSString* screenName = [args objectAtIndex:1];
@@ -109,7 +183,6 @@
 }
 
 - (void)trackEvent:(id)args {
-    ENSURE_STRING([args objectAtIndex:0]);
     NSString* instanceName = [args objectAtIndex:0];
     Tealium* instance = [self getInstance:instanceName];
     NSString* screenName = [args objectAtIndex:1];
@@ -118,19 +191,15 @@
 }
 
 - (void)setVolatile:(id)args {
-    ENSURE_STRING([args objectAtIndex:0]);
     NSString* instanceName = [args objectAtIndex:0];
     Tealium* instance = [self getInstance:instanceName];
-    ENSURE_DICT([args objectAtIndex:1]);
     NSDictionary* dataLayer = [args objectAtIndex:1];
     [instance addVolatileDataSources:dataLayer];
 }
 
 - (void)setPersistent:(id)args {
-    ENSURE_STRING([args objectAtIndex:0]);
     NSString* instanceName = [args objectAtIndex:0];
     Tealium* instance = [self getInstance:instanceName];
-    ENSURE_DICT([args objectAtIndex:1]);
     NSMutableDictionary* dataLayer = [args objectAtIndex:1];
     NSArray* emptyKeys = [self checkIfEmpty:dataLayer];
     if ([emptyKeys count] > 0) {
@@ -155,29 +224,23 @@
 }
 
 - (id)getVolatile:(id)args {
-    ENSURE_STRING([args objectAtIndex:0]);
     NSString* instanceName = [args objectAtIndex:0];
     Tealium* instance = [self getInstance:instanceName];
-    ENSURE_STRING([args objectAtIndex:1]);
     NSString* key = [args objectAtIndex:1];
     return [[instance volatileDataSourcesCopy] objectForKey:key];
 
 }
 
 - (id)getPersistent:(id)args {
-    ENSURE_STRING([args objectAtIndex:0]);
     NSString* instanceName = [args objectAtIndex:0];
     Tealium* instance = [self getInstance:instanceName];
-    ENSURE_STRING([args objectAtIndex:1]);
     NSString* key = [args objectAtIndex:1];
     return [[instance persistentDataSourcesCopy] objectForKey:key];
 }
 
 - (void)addRemoteCommand:(id)args {
-    ENSURE_STRING([args objectAtIndex:0]);
     NSString* instanceName = [args objectAtIndex:0];
     Tealium* instance = [self getInstance:instanceName];
-    ENSURE_STRING([args objectAtIndex:1]);
     NSString* commandId = [args objectAtIndex:1];
     KrollCallback* callback = [args objectAtIndex:2];
     [instance addRemoteCommandID:commandId description:@"Titanium Remote Command" targetQueue:dispatch_get_main_queue() responseBlock:^(TEALRemoteCommandResponse * _Nonnull response) {
@@ -185,15 +248,13 @@
 
         NSError *error;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:tagBridgeResponse
-                                                           options:0 // Pass 0 if you don't care about the readability of the generated string
+                                                           options:0
                                                              error:&error];
 
         if (! jsonData) {
             NSLog(@"Got an error: %@", error);
         } else {
             NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            // NSString* responseString = [tagBridgeResponse description];
-            // [callback callAsync:@[jsonString] thisObject:nil];
             [callback callAsync:@[jsonString] thisObject:nil];
         }
 

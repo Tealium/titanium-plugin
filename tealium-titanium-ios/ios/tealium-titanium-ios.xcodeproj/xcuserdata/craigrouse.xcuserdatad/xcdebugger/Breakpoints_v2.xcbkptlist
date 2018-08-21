@@ -6,16 +6,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Classes/ComTealiumTitaniumiosModule.m"
-            timestampString = "554656867.801861"
+            timestampString = "556546376.626312"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "-startup"
+            startingLineNumber = "140"
+            endingLineNumber = "140"
+            landmarkName = "-setConsentLoggingEnabled:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
