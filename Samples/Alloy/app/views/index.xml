@@ -1,6 +1,0 @@
-<Alloy>
-	<Window class="container">
-		<Label id="label" top="50">index</Label>
-		<Button top="100" onClick="doClick">Next...</Button>
-	</Window>
-</Alloy>

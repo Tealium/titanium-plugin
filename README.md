@@ -1,25 +1,217 @@
 # Tealium Titanium Plugin
 
-This plugin brings the power of [Tealium's mobile tag management solution](http://tealium.com/products/tealium-for-mobile/) to Titanium applications.  It provides a bridge to the native [Android](https://github.com/Tealium/android-library) and [iOS](https://github.com/Tealium/ios-library) libraries.
+The Tealium Titanium plugin provides the means to integrate iQ Tag Management and Tealium's suite of Universal Data Hub products into an Appcelerator Titanium application. 
 
-## What is Tealium iQ Tag Management ? 
+## Installation
 
-The [Tealium iQ™](http://tealium.com/products/tealium-iq-tag-management-system/) tag management system is a powerful and highly extensible solution that helps marketers easily manage their mission-critical technologies across web and mobile channels. Tealium iQ drives the complexity out of vendor tag deployments and is the cornerstone for achieving unified marketing, i.e., the ability to harmonize applications and data to drive superior cross-channel customer interactions.
+These instructions explain how to install the plugin by downloading it from the Tealium GitHub repository. It is also available to download from Axway's [Marketplace](https://marketplace.axway.com).
 
-## How To Get Started
+## API Definition
 
-Check out the [Quickstart](QUICKSTART.md) guide for a step by step walkthough of adding Tealium to an extisting project  
+### [require]
 
-## Communication
+	var Tealium;
+	// initialize the relevant plugin for the current platform
+	if (Ti.Platform.name == "android") {
+	  tealium = require("com.tealium.titaniumandroid");
+	} else if (Ti.Platform.name == "iOS" || Ti.Platform.name == "iPhone OS") {
+	  tealium = require("com.tealium.titaniumios");
+	}
 
-* If you have **code questions** or have experienced **errors** please post an issue in the [issues page](../../issues)
-* If you have **general questions** or want to network with other users please visit the [Tealium Learning Community](https://community.tealiumiq.com)
-* If you have **account specific questions** please contact your Tealium account manager
+### initTealium
 
-## License
+	/**
+	 * Initializes a Tealium instance.
+	 * @param instanceName	a constant instance name used to refer to this instance of the Tealium class
+	 * @param account	your tealium account name
+	 * @param profile	your tealium profile name
+	 * @param environment	usually dev, qa, or prod
+	 * @param dataSourceID	optional tealium data source ID (for UDH)
+	 * @param collectDispatchURL	optional URL override for tealium collect. Pass null if not required.
+	 * @param collectDispatchProfile	optional profile override for tealium collect. Full URL takes precedence over just the profile if both are provided. Pass null if not required.
+	 * @param isLifecycleEnabled	boolean value. True if automatic lifecycle tracking is required.
+	 * @param isCrashReporterEnabled	boolean value. True if crash reporting should be enabled on Android.
+	 * @param isConsentManagerEnabled	 boolean value. True if consent manager should be enabled (Android and iOS).
+	 */
+	tealium.initTealium("main","tealiummobile","demo","dev","abc123",null,null,true,true, true);
 
-Use of this software is subject to the terms and conditions of the license agreement contained in the file titled "LICENSE.txt".  Please read the license before downloading or using any of the files contained in this repository. By downloading or using any of these files, you are agreeing to be bound by and comply with the license agreement.
+### enableAdIdentifier
 
---------------------------------------------
+	/**
+	 * Enables collection of IDFA(iOS)/ADID(Android).
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance
+	 * @param	persistent	boolean value; true value stores the identifier in persistent data (recommended), false stores as volatile data.
+	 * @param
+	 */
+	tealium.enableAdIdentifier("main", true);
 
-Copyright (C) 2012-2015, Tealium Inc.
+### triggerCrash
+
+	/**
+	 * Triggers a crash. Only works if tealiumenvironment is set to "dev". Android only.
+	 */
+	 tealium.triggerCrash();
+
+### trackView
+
+	/**
+	 * Tracks a screen view
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	screenName	the name of the screen/activity to be tracked.
+	 * @param	dataLayer	the JavaScript object representing the data layer to be tracked
+	 */
+	 tealium.trackView("main", "Home Screen", {"customer_id": "12345", "customer_type": "registered_user"});
+
+
+### trackEvent
+
+	/**
+	 * Tracks an interaction event e.g. user clicks a "Buy Now" or other call-to-action button
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	eventName	the name of the event/interaction to be tracked.
+	 * @param	dataLayer	the JavaScript object representing the data layer to be tracked
+	 */
+	 tealium.trackEvent("main", "Buy Now Clicked", {"customer_id": "12345", "customer_type": "registered_user"});
+ 
+### setVolatile
+
+
+	/**
+	 * Stores a defined set of values in volatile data and sends them on each hit until the app is terminated or cleared from main memory
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	data	the JavaScript object representing the data to be saved in volatile storage. If a key contains a null value (null, undefined or empty string), it will be deleted.
+	 */
+	 tealium.setVolatile("main", {"session_id": "12345"});
+
+
+### setPersistent
+
+	/**
+	 * Stores a defined set of values in persistent data and sends them on each hit until the app is uninstalled from the device
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	data	the JavaScript object representing the data to be saved in volatile storage. If a key contains a null value (null, undefined or empty string), it will be deleted.
+	 */
+	 tealium.setPersistent("main", {"session_id": "12345"});
+	 
+
+### getVolatile
+
+	/**
+	 * Returns a value for a specified key from the volatile data store
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	keyName	the key name of the value to be retrieved
+	 */
+	 tealium.getVolatile("main", "session_id");
+
+### getPersistent
+
+	/**
+	 * Returns a value for a specified key from the persistent data store
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	keyName	the key name of the value to be retrieved
+	 */
+	 tealium.getPersistent("main", "session_id");
+
+
+### addRemoteCommand
+
+
+	/**
+	 * Adds a remote command that can be executed later on by the TagBridge Remote Command tag in Tealium iQ
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	commandId	the name of the remote command. Must match the command ID set up in Tealium iQ.
+	 * @param	callback	a standard JavaScript function taking a single parameter as a JSON string
+	 */
+	 tealium.addRemoteCommand("main", "log", function(response){
+	  alert("Remote command 'log' called!");
+	  if (typeOf(response) === "string") {
+	    response = JSON.parse(response);
+	  }
+	  if (response.myvalue) {
+	    console.log("response.myvalue is: " + response.myvalue)
+	  }
+	});
+	
+### setUserConsentStatus
+
+	/**
+	 * Sets the user's consent status to consented or not consented
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	consentStatus	string value. "consented" or "notConsented".
+	 */
+	 tealium.setUserConsentStatus("main", "consented");
+
+### setUserConsentCategories
+
+	/**
+	 * Sets the user's consent status to consented and allows tracking for specific categories only (partial consent)
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param	consentCategories string array. List of categories the user has consented to be tracked under.
+	 */
+	 tealium.setUserConsentCategories("main", ["analytics", "personalization"]);
+
+### resetUserConsentPreferences
+
+	/**
+	 * Resets the user's consent preferences to defaults
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 */
+	 tealium.resetUserConsentPreferences("main");
+ 
+### setConsentLoggingEnabled
+
+	/**
+	 * Resets the user's consent preferences to defaults
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param enabled boolean value. Enables (true) or disables (false) the consent logging feature
+	 */
+	 tealium. setConsentLoggingEnabled("main", true); 
+  
+### getUserConsentStatus
+
+	/**
+	 * Gets the user's current consent status
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 */
+	var status = tealium.getUserConsentStatus("main"); // returns "Consented" or "NotConsented"
+	
+### getUserConsentCategories
+
+	/**
+	 * Gets the user's current consent categories
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 */
+	var categories = tealium.getUserConsentCategories("main"); // returns e.g. ["analytics", "personalization"]
+	
+### setUserConsentPolicy
+
+ 	/**
+	 * Sets the current consent policy to a new string value
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 * @param policy	string value. The consent policy value to be sent when consent logging is enabled
+	 */
+	tealium.setUserConsentPolicy("main", "mynewpolicy"); 	
+
+### resetUserConsentPolicy
+ 
+ 	/**
+	 * Resets the current consent policy to default
+	 * @param instanceName	the tealium instance name used when initializing the tealium instance	
+	 */
+	tealium.resetUserConsentPolicy("main"); 
+	
+### Install Referrer (Android Only)
+
+To collect the install referrer information on Android, the following snippet can be used, which will register a new Broadcast Receiver.
+
+	// broadcast receiver for install referrer
+	var installReferrerReceiver = Ti.Android.createBroadcastReceiver({
+	  onReceived : function(e) {
+	        var intent = e.intent,
+	            referrer = intent.getStringExtra("referrer");
+	            if (referrer) {
+	              tealium.setVolatile("main", {"install_referrer": referrer});
+	            }
+	    }
+	});
+	Ti.Android.registerBroadcastReceiver(installReferrerReceiver, ["com.android.vending.INSTALL_REFERRER"]);	

@@ -10,3 +10,8 @@ Source/tealium_android/.project
 Source/tealium_android/.settings/
 Source/tealium_android/android/build/
 Source/tealium_android/bin/
+
+build/
+build.log
+.idea
+build*.sh
