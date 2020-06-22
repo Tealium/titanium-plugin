@@ -1,6 +1,0 @@
-<Alloy>
-	<Window class="container" backgroundColor="white">
-		<Label id="label" top="50">second</Label>
-		<Button top="100" onClick="doClick">Back...</Button>
-	</Window>
-</Alloy>
