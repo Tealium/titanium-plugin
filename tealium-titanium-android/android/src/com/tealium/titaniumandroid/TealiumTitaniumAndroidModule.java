@@ -21,6 +21,7 @@ import com.tealium.library.Tealium;
 import com.tealium.internal.tagbridge.RemoteCommand;
 import com.tealium.lifecycle.LifeCycle;
 import com.tealium.adidentifier.AdIdentifier;
+import com.tealium.installreferrer.InstallReferrerReceiver;
 import com.tealium.library.ConsentManager;
 import android.webkit.WebView;
 import java.util.Map;
@@ -66,7 +67,8 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
  }
 
  @Kroll.method
- public void initTealium(final String instanceName, String account, String profile, String env, String dataSourceId,
+ @SuppressWarnings("unchecked")
+ public void init(final String instanceName, String account, String profile, String env, String dataSourceId,
   String collectDispatchURL, String collectDispatchProfile, boolean isLifecycleEnabled, boolean isCrashReporterEnabled, boolean isConsentManagerEnabled) {
   // we can't initialize without an application handle
   if (thisApp == null) {
@@ -76,7 +78,7 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
   if (env != null && env.equals("dev")) {
    // enable webview debugging for dev environment only
    WebView.setWebContentsDebuggingEnabled(true);
-   this.isDevBuild = true;
+   isDevBuild = true;
   }
 
   Tealium.Config config = Tealium.Config.create(thisApp, account, profile, env);
@@ -104,7 +106,7 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
    try {
     // using reflection to check if optional crashreporter module is present in the app
     Class < ? > crashReporter = Class.forName("com.tealium.crashreporter.CrashReporter");
-    Class[] cArg = new Class[3];
+    Class<?>[] cArg = new Class<?>[3];
     cArg[0] = String.class;
     cArg[1] = Tealium.Config.class;
     cArg[2] = boolean.class;
@@ -248,6 +250,18 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
    AdIdentifier.setIdVolatile(instanceName, appContext);
   }
  }
+ 
+ @Kroll.method
+ public void enableInstallReferrer(String instanceName, boolean persistent) {
+  if (appContext == null) {
+   return;
+  }
+  if (persistent) {
+   InstallReferrerReceiver.setReferrerPersistent(appContext,instanceName);
+  } else {
+	  InstallReferrerReceiver.setReferrerVolatile(appContext,instanceName);
+  }
+ }
 
  private void track(String instanceName, String eventType, KrollDict eventData) {
   try {
@@ -275,7 +289,7 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
 
  @Kroll.method
  public void triggerCrash() {
-  if (!this.isDevBuild) {
+  if (!isDevBuild) {
    return;
   }
   final Handler handler = new Handler();
@@ -326,10 +340,11 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
      instance.getDataSources().getVolatileDataSources().put(keyName, (String) value);
     }
    } else if (value instanceof Object[]) {
-    Set < String > s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
+    Set < String > s = stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
     instance.getDataSources().getVolatileDataSources().put(keyName, s);
    } else if (value instanceof HashMap) {
-    HashMap < String, Object > obj = (HashMap < String, Object > ) value;
+	@SuppressWarnings("unchecked")
+    Map < String, Object > obj = (HashMap < String, Object > ) value;
     instance.getDataSources().getVolatileDataSources().put(keyName, obj);
    }
   }
@@ -357,13 +372,14 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
      instance.getDataSources().getPersistentDataSources().edit().putString(keyName, (String) value).apply();
     }
    } else if (value instanceof Object[]) {
-    Set < String > s = this.stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
+    Set < String > s = stringArrayToStringSet(objectArrayToStringArray((Object[]) value));
     instance.getDataSources().getPersistentDataSources().edit().putStringSet(keyName, s).apply();
    }
   }
  }
 
  @Kroll.method
+ @SuppressWarnings("unchecked")
  public Object getVolatile(String instanceName, String keyName) {
   final Tealium instance = Tealium.getInstance(instanceName);
   if (keyName == null) {
@@ -385,6 +401,7 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
  }
 
  @Kroll.method
+ @SuppressWarnings("unchecked")
  public Object getPersistent(String instanceName, String keyName) {
   final Tealium instance = Tealium.getInstance(instanceName);
   if (keyName == null) {
@@ -443,4 +460,5 @@ public class TealiumTitaniumAndroidModule extends KrollModule {
   }
   return strSet;
  }
+ 
 }

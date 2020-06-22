@@ -1,0 +1,3 @@
+repositories{    
+   maven { url "http://maven.tealiumiq.com/android/releases/" }
+}

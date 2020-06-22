@@ -1,14 +1,12 @@
 /**
- * tealium-titanium-ios
+ * Tealium Titanium Plugin
  *
  * Created by Your Name
- * Copyright (c) 2018 Your Company. All rights reserved.
+ * Copyright (c) 2020 Your Company. All rights reserved.
  */
-
 @import TealiumIOSLifecycle;
 #import "TiModule.h"
 #import <AdSupport/AdSupport.h>
-// #import "com_tealium_titaniumios-Swift.h"
 
 @interface ComTealiumTitaniumiosModule : TiModule {
 

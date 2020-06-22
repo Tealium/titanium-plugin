@@ -1,11 +1,10 @@
 /**
- * tealium-titanium-ios
+ * Tealium Titanium Plugin
  *
  * Created by Your Name
- * Copyright (c) 2018 Your Company. All rights reserved.
+ * Copyright (c) 2020 Your Company. All rights reserved.
  */
 
-#import <ModelIO/ModelIO.h>
 #import "ComTealiumTitaniumiosModule.h"
 #import "TiBase.h"
 #import "TiHost.h"
@@ -18,7 +17,7 @@
 // This is generated for your module, please do not change it
 - (id)moduleGUID
 {
-  return @"5e499c55-f4b3-487a-b53b-faf432852840";
+  return @"cd175a98-db09-4a04-bde1-2e11ff3e5a9a";
 }
 
 // This is generated for your module, please do not change it
@@ -31,15 +30,18 @@
 
 - (void)startup
 {
+  // This method is called when the module is first loaded
+  // You *must* call the superclass
   [super startup];
   DebugLog(@"[DEBUG] %@ loaded", self);
 }
 
 #pragma Public APIs
 
-- (void)initTealium:(id)args {
 
-    NSLog(@"[INFO] Inside initTealium method");
+- (void)init:(id)args {
+
+    NSLog(@"[INFO] Inside init method");
 
     NSString* instanceName = [args objectAtIndex:0];
     NSString* account = [args objectAtIndex:1];
@@ -66,9 +68,9 @@
     NSString* consentStatus = [args objectAtIndex:1];
     Tealium* instance = [Tealium instanceForKey:instanceName];
     if (instance != nil) {
-        TEALConsentStatus* status = NotConsented;
+        TEALConsentStatus status = TEALConsentStatusNotConsented;
         if ([consentStatus isEqualToString:@"consented"]) {
-            status = Consented;
+            status = TEALConsentStatusConsented;
         }
         [instance.consentManager setUserConsentStatus: status];
     }
