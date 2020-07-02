@@ -55,4 +55,4 @@ name: Tealium Titanium Plugin
 moduleid: com.tealium.titaniumios
 guid: cd175a98-db09-4a04-bde1-2e11ff3e5a9a
 platform: iphone
-minsdk: 9.1.0.v20200615121135
+minsdk: 9.0.0.v20200304064118

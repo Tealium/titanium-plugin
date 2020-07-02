@@ -55,4 +55,4 @@ name: tealium-titaniumandroid
 moduleid: com.tealium.titaniumandroid
 guid: 73f7b07a-0afa-48b9-a27d-6543f3d294e7
 platform: android
-minsdk: 9.1.0.v20200615121135
+minsdk: 9.0.0.v20200304064118
